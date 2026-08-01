@@ -1,0 +1,21 @@
+﻿# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build output
+bin/
+obj/
+
+# IDE files
+.idea/
+.vscode/
+
+# Build artifacts
+*.dll
+*.exe
+*.pdb
+
+# Extractor output
+*.dds
+decompressed.bin

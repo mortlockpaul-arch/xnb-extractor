@@ -1,0 +1,1418 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+<PropertyGroup>
+    <TargetFramework>net481</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Platforms>x86</Platforms>
+    <OutputType>Exe</OutputType>
+</PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\..\..\PycharmProjects\xenia-game-manager\src\downloads\XBLIG\KILLBOX (XBLIG)\extracted\584E07D1\Content\Screens\MainMenu.xnb" Link="MainMenu.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\..\..\..\PycharmProjects\xenia-game-manager\src\downloads\XBLIG\Lunacy (World) (XBLIG)\584E07D2\00000002\extracted\584E07D1\Content\gamefont.xnb" Link="gamefont.xnb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\xnb-extractor-fna\FNA.NetFramework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="gamebackground.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="gradient.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\monoxna.LICENSE" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\lzxdecoder.LICENSE" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\LICENSE" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Vector4.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Vector3.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Vector2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Utilities\XamarinHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Utilities\FNAInternalExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Utilities\FileHelpers.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Utilities\AssemblyHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\TitleLocation.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\TitleContainer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Storage\StorageDeviceNotConnectedException.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Storage\StorageDevice.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Storage\StorageContainer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Rectangle.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Ray.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Quaternion.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\PreparingDeviceSettingsEventArgs.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Point.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\PlayerIndex.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\PlaneIntersectionType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Plane.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\NamespaceDocs.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Media\Xiph\VideoPlayer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Media\Xiph\Video.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Media\VisualizationData.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Media\VideoSoundtrackType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Media\SongCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Media\Song.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Media\MediaState.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Media\MediaQueue.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Media\MediaPlayer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Matrix.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\MathHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\LaunchParameters.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\IUpdateable.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\Touch\TouchPanelCapabilities.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\Touch\TouchPanel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\Touch\TouchLocationState.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\Touch\TouchLocation.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\Touch\TouchCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\Touch\GestureType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\Touch\GestureSample.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\Touch\GestureDetector.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\TextInputEXT.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\MouseState.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\Mouse.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\KeyState.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\Keys.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\KeyboardState.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\Keyboard.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\GamePadType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\GamePadTriggers.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\GamePadThumbSticks.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\GamePadState.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\GamePadDPad.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\GamePadDeadZone.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\GamePadCapabilities.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\GamePadButtons.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\GamePad.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\ButtonState.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Input\Buttons.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\IGraphicsDeviceManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\IGameComponent.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\IDrawable.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\X360TexUtil.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Viewport.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\VertexPositionTexture.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\VertexPositionNormalTexture.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\VertexPositionColorTexture.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\VertexPositionColor.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\VertexElementUsage.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\VertexElementFormat.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\VertexElement.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\VertexDeclarationCache.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\VertexDeclaration.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\VertexBufferBinding.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\VertexBuffer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\IVertexType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\IndexElementSize.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\IndexBuffer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\DynamicVertexBuffer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\DynamicIndexBuffer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Vertices\BufferUsage.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\TextureCube.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\TextureCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Texture3D.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Texture2D.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Texture.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\SurfaceFormat.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\States\TextureFilter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\States\TextureAddressMode.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\States\StencilOperation.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\States\SamplerState.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\States\RasterizerState.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\States\FillMode.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\States\DepthStencilState.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\States\CullMode.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\States\CompareFunction.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\States\BlendState.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\States\BlendFunction.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\States\Blend.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\SpriteSortMode.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\SpriteFont.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\SpriteEffects.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\SpriteBatch.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\SetDataOptions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\SamplerStateCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\ResourceDestroyedEventArgs.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\ResourceCreatedEventArgs.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\RenderTargetUsage.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\RenderTargetCube.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\RenderTargetBinding.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\RenderTarget2D.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\ProfileCapabilities.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PrimitiveType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PresentInterval.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PresentationParameters.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PipelineCache.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\Short4.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\Short2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\Rgba64.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\Rgba1010102.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\Rg32.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\NormalizedShort4.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\NormalizedShort2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\NormalizedByte4.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\NormalizedByte2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\IPackedVector.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\HalfVector4.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\HalfVector2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\HalfTypeHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\HalfSingle.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\Byte4.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\Bgra5551.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\Bgra4444.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\Bgr565.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\PackedVector\Alpha8.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\OcclusionQuery.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\NoSuitableGraphicsDeviceException.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\ModelMeshPartCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\ModelMeshPart.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\ModelMeshCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\ModelMesh.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\ModelEffectCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\ModelBoneCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\ModelBone.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Model.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\IRenderTarget.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\IGraphicsDeviceService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\GraphicsResource.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\GraphicsProfile.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\GraphicsDeviceStatus.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\GraphicsDevice.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\GraphicsAdapter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\FNA3D.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\StockEffects\SpriteEffect.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\StockEffects\SkinnedEffect.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\StockEffects\EnvironmentMapEffect.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\StockEffects\EffectHelpers.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\StockEffects\DualTextureEffect.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\StockEffects\BasicEffect.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\StockEffects\AlphaTestEffect.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\Resources.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\IEffectMatrices.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\IEffectLights.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\IEffectFog.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\EffectTechniqueCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\EffectTechnique.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\EffectPassCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\EffectPass.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\EffectParameterType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\EffectParameterCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\EffectParameterClass.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\EffectParameter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\EffectMaterial.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\EffectAnnotationCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\EffectAnnotation.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\Effect.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\DxtUtil.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\DisplayModeCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\DisplayMode.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\DirectionalLight.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\DeviceNotResetException.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\DeviceLostException.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\DepthFormat.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\CubeMapFace.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\ColorWriteChannels.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\ClearOptions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\GraphicsDeviceManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\GraphicsDeviceInformation.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\GameWindow.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\GameTime.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\GameServiceContainer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\GameComponentCollectionEventArgs.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\GameComponentCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\GameComponent.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Game.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\FrameworkDispatcher.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\FNAPlatform\SDL2_FNAPlatform.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\FNAPlatform\FNAWindow.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\FNAPlatform\FNAPlatform.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\FNALoggerEXT.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\DrawableGameComponent.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\DisplayOrientation.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Design\Vector4Converter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Design\Vector3Converter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Design\Vector2Converter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Design\RectangleConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Design\RayConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Design\QuaternionConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Design\PointConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Design\PlaneConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Design\MatrixConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Design\MathTypeConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Design\ColorConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Design\BoundingSphereConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Design\BoundingBoxConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\CurveTangent.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\CurveLoopType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\CurveKeyCollection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\CurveKey.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\CurveContinuity.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Curve.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ResourceContentManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\LzxDecoder.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentTypeReaderManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentTypeReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentSerializerTypeVersionAttribute.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentSerializerRuntimeTypeAttribute.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentSerializerIgnoreAttribute.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentSerializerCollectionItemNameAttribute.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentSerializerAttribute.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\VideoReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\VertexDeclarationReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\VertexBufferReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\Vector4Reader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\Vector3Reader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\Vector2Reader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\UInt64Reader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\UInt32Reader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\UInt16Reader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\TimeSpanReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\TextureReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\TextureCubeReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\Texture3DReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\Texture2DReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\StringReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\SpriteFontReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\SoundEffectReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\SongReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\SkinnedEffectReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\SingleReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\SByteReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\ReflectiveReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\RectangleReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\RayReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\QuaternionReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\PointReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\PlaneReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\NullableReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\ModelReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\MatrixReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\ListReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\Int64Reader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\Int32Reader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\Int16Reader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\IndexBufferReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\ExternalReferenceReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\EnvironmentMapEffectReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\EnumReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\EffectReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\EffectMaterialReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\DualTextureEffectReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\DoubleReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\DictionaryReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\DecimalReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\DateTimeReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\CurveReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\ColorReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\CharReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\ByteReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\BoundingSphereReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\BoundingFrustumReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\BoundingBoxReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\BooleanReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\BasicEffectReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\ArrayReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReaders\AlphaTestEffectReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentReader.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentLoadException.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Content\ContentExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\ContainmentType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Color.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\BoundingSphere.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\BoundingFrustum.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\BoundingBox.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\WaveBank.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\SoundState.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\SoundEffectInstance.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\SoundEffect.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\SoundBank.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\RendererDetail.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\NoMicrophoneConnectedException.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\NoAudioHardwareException.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\MicrophoneState.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\Microphone.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\InstancePlayLimitException.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\DynamicSoundEffectInstance.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\Cue.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\AudioStopOptions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\AudioListener.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\AudioEngine.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\AudioEmitter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\AudioChannels.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Audio\AudioCategory.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\lib\Theorafile\csharp\Theorafile.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\lib\SDL2-CS\src\SDL2_ttf.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\lib\SDL2-CS\src\SDL2_mixer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\lib\SDL2-CS\src\SDL2_image.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\lib\SDL2-CS\src\SDL2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\lib\FAudio\csharp\FAudio.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\YUVToRGBA\YUVToRGBAEffect.fxb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\StockEffects\FXB\SpriteEffect.fxb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\StockEffects\FXB\SkinnedEffect.fxb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\StockEffects\FXB\EnvironmentMapEffect.fxb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\StockEffects\FXB\DualTextureEffect.fxb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\StockEffects\FXB\BasicEffect.fxb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\StockEffects\FXB\AlphaTestEffect.fxb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\lib\x86\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mortl\.nuget\packages\fnalibs\21.7.0\build\..\lib\x86\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\lib\x86\SDL2.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\lib\x86\libtheorafile.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\lib\x86\FNA3D.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\lib\x86\FAudio.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mortl\.nuget\packages\fnalibs\21.7.0\build\..\lib\x86\SDL2.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mortl\.nuget\packages\fnalibs\21.7.0\build\..\lib\x86\libtheorafile.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mortl\.nuget\packages\fnalibs\21.7.0\build\..\lib\x86\FNA3D.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\mortl\.nuget\packages\fnalibs\21.7.0\build\..\lib\x86\FAudio.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\lib\x86\SDL2.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Content\Content\" />
+  </ItemGroup>
+
+</Project>
