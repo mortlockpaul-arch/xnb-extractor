@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using XnbExtractor.Content;
-using Microsoft.Xna.Framework;
 using System.IO;
 using XnbExtractor.Compression;
 

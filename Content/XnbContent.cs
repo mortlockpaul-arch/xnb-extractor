@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using XnbExtractor.Xnb;
 
 namespace XnbExtractor.Content;
 
 public class XnbContent
 {
+    //public TargetPlatform Platform { get; set; }
 
     public List<string> Readers { get; } = new();
 
@@ -15,6 +16,19 @@ public class XnbContent
 
     public long DataPosition { get; set; }
 
-    public string PrimaryReaderType =>
-        Readers[PrimaryReaderIndex - 1];
+    public string PrimaryReaderType
+    {
+        get
+        {
+            int index = PrimaryReaderIndex - 1;
+
+            if (index < 0 || index >= Readers.Count)
+            {
+                throw new IndexOutOfRangeException(
+                    $"Invalid primary reader index: {PrimaryReaderIndex}");
+            }
+
+            return Readers[index];
+        }
+    }
 }

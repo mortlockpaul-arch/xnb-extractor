@@ -9,6 +9,14 @@ namespace XnbExtractor
 {
     internal class Utilities
     {
+        class ExtractOptions
+        {
+            public bool Loader { get; set; }
+            public bool Parser { get; set; }
+            public bool WriteDds { get; set; }
+            public bool Overwrite { get; set; }
+        }
+
         public static string GetRelativePath(string basePath, string path)
         {
             var baseUri = new Uri(AppendDirectorySeparatorChar(basePath));

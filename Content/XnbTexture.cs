@@ -6,7 +6,11 @@ namespace XnbExtractor.Content;
 
 public class XnbTexture
 {
-    public SurfaceFormat Format { get; set; }
+    public int RawFormat { get; set; }
+
+    public XboxSurfaceFormat? XboxFormat { get; set; }
+
+    public SurfaceFormat? WindowsFormat { get; set; }
 
     public int Width { get; set; }
 
@@ -14,10 +18,5 @@ public class XnbTexture
 
     public int MipCount { get; set; }
 
-    public List<byte[]> MipData { get; set; } = new();
-
-    public byte[] GetMip(int level = 0)
-    {
-        return MipData[level];
-    }
+    public List<byte[]> MipData { get; } = new();
 }

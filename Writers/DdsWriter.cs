@@ -9,56 +9,110 @@ namespace XnbExtractor.Writers
     {
         public static void Write(XnbTexture texture, string path)
         {
-            Console.WriteLine($"Format: {texture.Format}");
+            Console.WriteLine($"Raw Format: {texture.RawFormat}");
             Console.WriteLine($"Raw bytes: {texture.MipData[0].Length}");
-            Console.WriteLine($"Expected: {texture.Width * texture.Height * 2}");
+            int expected;
+
+            if (texture.XboxFormat == XboxSurfaceFormat.Color)
+                expected = texture.Width * texture.Height * 4;
+            else if (texture.XboxFormat == XboxSurfaceFormat.Bgr565)
+                expected = texture.Width * texture.Height * 2;
+            else
+                expected = texture.MipData[0].Length;
+
+            Console.WriteLine($"Expected: {expected}");
+
+            int bytesPerPixel = texture.MipData[0].Length / (texture.Width * texture.Height);
+
+            Console.WriteLine($"BytesPerPixel = {bytesPerPixel}");
+
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             using var stream = File.Create(path);
             using var writer = new BinaryWriter(stream);
-            switch (texture.Format)
+
+            if (texture.XboxFormat == XboxSurfaceFormat.Color)
             {
-                case SurfaceFormat.Dxt1:
-                    WriteDxt1Header(writer, texture);
-
-                    foreach (var dxtMip in texture.MipData)
-                    {
-                        writer.Write(dxtMip);
-                    }
-                    break;
-
-                case SurfaceFormat.Bgr565:
-                    WriteRgbaHeader(writer, texture);
-
-                    var mip = texture.MipData[0];
-
-                    int rowBytes = texture.Width * 2;
-                    int xboxPitch = mip.Length / texture.Height;
-
-                    byte[] linear565 = new byte[rowBytes * texture.Height];
-
-                    for (int y = 0; y < texture.Height; y++)
-                    {
-                        Buffer.BlockCopy(
-                            mip,
-                            y * xboxPitch,
-                            linear565,
-                            y * rowBytes,
-                            rowBytes);
-                    }
-
-                    byte[] rgba = ConvertBgr565ToRgba(
-                        linear565,
-                        texture.Width,
-                        texture.Height);
-
-                    writer.Write(rgba);
-                    break;
-
-                default:
-                    throw new NotSupportedException(
-                        $"DDS format not supported: {texture.Format}");
+                WriteRgbaHeader(writer, texture);
+                writer.Write(texture.MipData[0]);
+                return;
             }
-            Console.WriteLine(stream.Position);
-            
+
+            if (texture.XboxFormat == XboxSurfaceFormat.Dxt1)
+            {
+                WriteDxt1Header(writer, texture);
+                writer.Write(texture.MipData[0]);
+                return;
+            }
+            if (texture.XboxFormat.HasValue)
+            {
+                switch (texture.XboxFormat.Value)
+                {
+                    case XboxSurfaceFormat.Color:
+                        WriteRgbaHeader(writer, texture);
+                        writer.Write(texture.MipData[0]);
+                        break;
+
+                    case XboxSurfaceFormat.Bgr565:
+                        WriteBgr565Header(writer, texture);
+                        writer.Write(texture.MipData[0]);
+                        break;
+
+                    case XboxSurfaceFormat.Dxt1:
+                        WriteDxt1Header(writer, texture);
+                        writer.Write(texture.MipData[0]);
+                        break;
+
+                    default:
+                        throw new NotSupportedException(
+                            $"Unsupported Xbox format {texture.XboxFormat}");
+                }
+            }
+            else
+            {
+                if (texture.WindowsFormat.HasValue)
+                {
+                    switch (texture.WindowsFormat.Value)
+                    {
+                        case SurfaceFormat.Dxt1:
+                            WriteDxt1Header(writer, texture);
+
+                            foreach (var dxtMip in texture.MipData)
+                            {
+                                writer.Write(dxtMip);
+                            }
+                            break;
+
+                        case SurfaceFormat.Bgr565:
+                            {
+                                WriteRgbaHeader(writer, texture);
+
+                                var mip = texture.MipData[0];
+
+                                Console.WriteLine($"Raw length = {mip.Length}");
+
+                                for (int i = 0; i < 64; i += 16)
+                                {
+                                    Console.Write($"{i:X4}: ");
+
+                                    for (int j = 0; j < 16; j++)
+                                        Console.Write($"{mip[i + j]:X2} ");
+
+                                    Console.WriteLine();
+                                }
+
+                                // Test 1: treat it as RGBA8888
+                                writer.Write(mip);
+
+                                break;
+                            }
+
+                        default:
+                            throw new NotSupportedException(
+                                $"DDS format not supported: {texture.WindowsFormat}");
+                    }
+                    Console.WriteLine(stream.Position);
+                }
+            }
         }
 
         private static void WriteRgbaHeader(BinaryWriter writer, XnbTexture texture)

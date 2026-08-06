@@ -1,12 +1,11 @@
 <Solution>
   <Configurations>
-    <Platform Name="Any CPU" />
-    <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="../xnb-extractor-fna/FNA.NetFramework.csproj" />
+  <Project Path="../PycharmProjects/xenia-game-manager/src/downloads/XBLIG/Downtown SMASH Dodgeball! (World) (XBLIG)/584E07D2/00000002/decompiled/dbz_xna.csproj" />
+  <Project Path="../Users/mortl/source/repos/ClassLibrary1/Microsoft.Xna.Framework.csproj" Id="ff0bd1f0-baf3-4e5b-b329-a8f0394d0275" />
+  <Project Path="../xblig-references/isdf.Runtime.csproj" />
   <Project Path="XnbExtractor.csproj">
-    <Platform Solution="*|x64" Project="x64" />
-    <Platform Solution="*|x86" Project="x86" />
+    <Platform Project="x86" />
   </Project>
 </Solution>

@@ -5,18 +5,15 @@ using XnbExtractor.Xnb;
 
 namespace XnbExtractor.Readers;
 
-public static class ModelReader
+public static class XnbModelReader
 {
     public static object Read(
-        XnbExtractor.Content.XnbContent content,
         XnbExtractor.Content.XnbContentReader reader)
     {
         Console.WriteLine("Reading Model");
-        for (int i = 0; i < content.Readers.Count; i++)
-        {
-            Console.WriteLine($"{i}: {content.Readers[i]}");
-        }
-        // Temporary - just consume/inspect data
+
+        // TODO: implement model parsing
+
         return new XnbExtractor.Content.XnbModel();
     }
 }

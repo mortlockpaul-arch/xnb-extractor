@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\xnb-extractor-fna\FNA.NetFramework.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="gamebackground.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -1412,7 +1408,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Content\Content\" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="System.Text.Json" Version="10.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Users\mortl\source\repos\ClassLibrary1\Microsoft.Xna.Framework.csproj" />
+    <ProjectReference Include="..\xblig-references\isdf.Runtime.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework">
+      <HintPath>..\PycharmProjects\xenia-game-manager\src\References\v3.1\References\Xbox360\Microsoft.Xna.Framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Monogame_Compression.Content.Readers
 {
-    internal class SoundEffectReader
+    internal class XnbEffectReader
     {
     }
 }

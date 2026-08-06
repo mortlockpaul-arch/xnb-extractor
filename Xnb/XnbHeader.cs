@@ -5,9 +5,14 @@ using System.Text;
 
 namespace XnbExtractor.Xnb;
 
-    public class XnbHeader
+public enum TargetPlatform
+{
+    Windows,
+    Xbox360
+}
+public class XnbHeader
     {
-        public char Platform { get; set; }
+        public TargetPlatform Platform { get; set; }
         public byte Version { get; set; }
         public byte Flags { get; set; }
 
@@ -28,14 +33,24 @@ namespace XnbExtractor.Xnb;
             if (new string(reader.ReadChars(3)) != "XNB")
                 throw new InvalidDataException("Not an XNB file.");
 
+            char platform = (char)reader.ReadByte();
+
             var header = new XnbHeader
             {
-                Platform = (char)reader.ReadByte(),
                 Version = reader.ReadByte(),
                 Flags = reader.ReadByte(),
+                Platform = platform switch
+                {
+                    'w' => TargetPlatform.Windows,
+                    'x' => TargetPlatform.Xbox360,
+                    _ => throw new InvalidDataException(
+                        $"Unknown XNB platform '{platform}' (0x{(int)platform:X2})")
+                }
             };
-
-            int fileSize = reader.ReadInt32();
+        Console.WriteLine($"Version = {header.Version}");
+        Console.WriteLine($"Platform character = '{platform}' (0x{(int)platform:X2})");
+        Console.WriteLine($"Platform enum      = {header.Platform}");
+        int fileSize = reader.ReadInt32();
             header.CompressedSize = fileSize;
 
             if (header.IsCompressed)
