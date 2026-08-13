@@ -486,8 +486,8 @@ namespace XnbExtractor.Compression
 			if(start_window_pos == 0) start_window_pos = (int)window_size;
 			start_window_pos -= outLen;
             Console.WriteLine($"Writing {outLen} bytes");
-            Console.WriteLine($"start_window_pos = {start_window_pos}");
-            Console.WriteLine($"window_posn = {window_posn}");
+            //Console.WriteLine($"start_window_pos = {start_window_pos}");
+            //Console.WriteLine($"window_posn = {window_posn}");
             outData.Write(window, start_window_pos, outLen);
 			
 			m_state.window_posn = window_posn;

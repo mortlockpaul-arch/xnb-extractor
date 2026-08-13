@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "XnbExtractor": {
+      "commandName": "Project"
+    },
+    "XnbExtractor One File": {
+      "commandName": "Project",
+      "commandLineArgs": "--input \"C:\\PycharmProjects\\xenia-game-manager\\src\\downloads\\XBLIG\\Lumberjack (World) (XBLIG)\\584E07D2\\00000002\\extracted\\584E07D1\\Content\\Shaders\\PostBlur.windows.xnb\"\r\n"
+    }
+  }
+}

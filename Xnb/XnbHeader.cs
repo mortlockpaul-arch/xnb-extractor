@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using XnbExtractor.Content;
 
 namespace XnbExtractor.Xnb;
 
-public enum TargetPlatform
-{
-    Windows,
-    Xbox360
-}
+
 public class XnbHeader
     {
         public TargetPlatform Platform { get; set; }

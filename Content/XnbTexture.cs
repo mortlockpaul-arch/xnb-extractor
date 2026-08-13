@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using static XnbExtractor.Utilities;
+using static XnbExtractor.Utilities.TextureFormatDetector;
 
 namespace XnbExtractor.Content;
 
@@ -11,7 +13,7 @@ public class XnbTexture
     public XboxSurfaceFormat? XboxFormat { get; set; }
 
     public SurfaceFormat? WindowsFormat { get; set; }
-
+    public TextureFormat Format { get; set; }
     public int Width { get; set; }
 
     public int Height { get; set; }

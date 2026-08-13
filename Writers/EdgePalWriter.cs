@@ -4,7 +4,7 @@ using XnbExtractor.Models;
 
 public static class EdgePalWriter
 {
-    public static void Write(EdgePal palette, string output)
+    public static void Write(XnbTEdgePal palette, string output)
     {
         var json = JsonSerializer.Serialize(
             palette,

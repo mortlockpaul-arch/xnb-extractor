@@ -11,7 +11,7 @@
 using System;
 #endregion
 
-namespace Microsoft.Xna.Framework.Content
+namespace XnbExtractor.Content.Readers
 {
 	public class ContentLoadException : Exception
 	{

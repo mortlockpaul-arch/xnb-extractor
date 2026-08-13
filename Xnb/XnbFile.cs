@@ -38,7 +38,17 @@ public class XnbFile : IDisposable
     public byte[] Decompress()
     {
         if (!Header.IsCompressed)
-            return Data;
+        {
+            byte[] content = new byte[Data.Length - Header.PayloadOffset];
+            Buffer.BlockCopy(
+                Data,
+                Header.PayloadOffset,
+                content,
+                0,
+                content.Length);
+
+            return content;
+        }
 
         using var input = new MemoryStream(Data);
         input.Position = Header.PayloadOffset;

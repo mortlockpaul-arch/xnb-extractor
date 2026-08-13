@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using XnbExtractor.Content.Writers;
 using XnbExtractor.Xnb;
 
 namespace XnbExtractor.Content;
 
 public class XnbContent
 {
-    //public TargetPlatform Platform { get; set; }
-
-    public List<string> Readers { get; } = new();
+    public List<XnbReaderInfo> Readers { get; } = new();
 
     public int SharedResourceCount { get; set; }
 
@@ -28,7 +27,7 @@ public class XnbContent
                     $"Invalid primary reader index: {PrimaryReaderIndex}");
             }
 
-            return Readers[index];
+            return Readers[index].Type;
         }
     }
 }

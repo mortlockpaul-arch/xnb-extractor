@@ -1,84 +1,101 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
-
+using XnbExtractor.Content;
 using XnbExtractor.Xnb;
+using static XnbExtractor.Utilities;
+using static XnbExtractor.Utilities.TextureFormatDetector;
 
-namespace XnbExtractor.Content;
-
-public static class XnbTexture2DReader
+public class XnbTexture2DReader : IXnbTypeReader
 {
-    public static XnbTexture Parse(XnbContentReader reader)
+    public object Read(XnbContentReader reader)
     {
         Console.WriteLine("===== Texture2DReader =====");
         Console.WriteLine($"reader.Platform = {reader.Platform}");
         Console.WriteLine($"(int)reader.Platform = {(int)reader.Platform}");
-        Console.WriteLine($"Xbox360 enum value = {(int)TargetPlatform.Xbox360}");
-        Console.WriteLine($"Windows enum value = {(int)TargetPlatform.Windows}");
+
         var texture = new XnbTexture();
-        Console.WriteLine($"Reader.Platform = {reader.Platform}");
+
         texture.RawFormat = reader.ReadInt32();
+
+        texture.Format = TextureFormatDetector.Detect(
+            reader.Platform,
+            texture.RawFormat);
+
+        Console.WriteLine($"Detected format = {texture.Format}");
 
         if (reader.Platform == TargetPlatform.Xbox360)
         {
-            texture.XboxFormat = (XboxSurfaceFormat)texture.RawFormat;
+            texture.XboxFormat =
+                (XboxSurfaceFormat)texture.RawFormat;
+
+            texture.WindowsFormat =
+                TextureFormatDetector.ToWindowsFormat(
+                    texture.Format);
         }
         else
         {
-            texture.WindowsFormat = (SurfaceFormat)texture.RawFormat;
+            texture.WindowsFormat =
+                (SurfaceFormat)texture.RawFormat;
         }
-        //texture.Format = (SurfaceFormat)reader.ReadInt32();
+
         texture.Width = reader.ReadInt32();
         texture.Height = reader.ReadInt32();
         texture.MipCount = reader.ReadInt32();
 
-        Console.WriteLine($"Position = {reader.Position}");
+        Console.WriteLine($"Raw Format     = {texture.RawFormat}");
+        Console.WriteLine($"Xbox Format    = {texture.XboxFormat}");
+        Console.WriteLine($"Windows Format = {texture.WindowsFormat}");
+        Console.WriteLine($"Width          = {texture.Width}");
+        Console.WriteLine($"Height         = {texture.Height}");
+        Console.WriteLine($"MipCount       = {texture.MipCount}");
 
-        long pos = reader.Position;
+        long expected32 =
+            (long)texture.Width * texture.Height * 4;
 
-        byte[] peek = reader.ReadBytes(16);
+        long expected16 =
+            (long)texture.Width * texture.Height * 2;
 
-        Console.Write("Next bytes: ");
-        foreach (byte b in peek)
-            Console.Write($"{b:X2} ");
-        Console.WriteLine();
+        long expected8 =
+            (long)texture.Width * texture.Height;
 
-        reader.Seek(pos);
-
-        Console.WriteLine($"Raw Format = {texture.RawFormat}");
-        Console.WriteLine($"Raw Format = {texture.RawFormat} (0x{texture.RawFormat:X8})");
-        if (reader.Platform == TargetPlatform.Xbox360)
-            Console.WriteLine($"Xbox Format = {texture.XboxFormat}");
-        else
-            Console.WriteLine($"Windows Format = {texture.WindowsFormat}");
-
-        Console.WriteLine($"Width={texture.Width}");
-        Console.WriteLine($"Height={texture.Height}");
-        Console.WriteLine($"MipCount={texture.MipCount}");
-
-
+        Console.WriteLine($"Expected 32-bit = {expected32}");
+        Console.WriteLine($"Expected 16-bit = {expected16}");
+        Console.WriteLine($"Expected 8-bit  = {expected8}");
         for (int mip = 0; mip < texture.MipCount; mip++)
         {
-            int size = reader.ReadInt32();
-            Console.WriteLine($"Stored mip size = {size}");
+            int mipWidth = Math.Max(1, texture.Width >> mip);
+            int mipHeight = Math.Max(1, texture.Height >> mip);
 
-            var data = reader.ReadBytes(size);
-            texture.MipData.Add(data);
+            int storedSize = reader.ReadInt32();
 
-            Console.WriteLine("First 8 pixels:");
+            Console.WriteLine(
+                $"Mip {mip}: {mipWidth}x{mipHeight}, " +
+                $"stored size = {storedSize}");
 
-            int count = Math.Min(8, data.Length / 4);
-
-            for (int p = 0; p < count; p++)
+            byte[] data = reader.ReadBytes(storedSize);
+            for (int i = 0; i < Math.Min(8, data.Length / 4); i++)
             {
-                uint pixel = BitConverter.ToUInt32(data, p * 4);
-                Console.WriteLine($"{p}: 0x{pixel:X8}");
+                uint value = BitConverter.ToUInt32(data, i * 4);
+
+                Console.WriteLine(
+                    $"DWORD[{i}] = 0x{value:X8}");
             }
+            Console.WriteLine(
+                $"Mip {mip}: actually read {data.Length} bytes");
 
-            Console.WriteLine($"Mip {mip}: {size} bytes");
+            Console.WriteLine(
+                $"First 32 bytes: {BitConverter.ToString(data, 0, Math.Min(32, data.Length))}");
+
+            texture.MipData.Add(data);
         }
+        Console.WriteLine(
+    $"MipData.Count = {texture.MipData.Count}");
 
+        if (texture.MipData.Count > 0)
+        {
+            Console.WriteLine(
+                $"Actual = {texture.MipData[0].Length}");
+        }
         return texture;
     }
 }

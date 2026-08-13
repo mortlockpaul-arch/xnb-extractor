@@ -17,6 +17,6 @@ public class XnbTEdgePalReader : IXnbTypeReader
         }
         Console.WriteLine($"First colour: 0x{colors[0]:X8}");
         Console.WriteLine($"Last colour: 0x{colors[255]:X8}");
-        return new EdgePal(colors);
+        return new XnbTEdgePal(colors);
     }
 }

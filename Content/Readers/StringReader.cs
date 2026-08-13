@@ -2,7 +2,7 @@
 
 namespace XnbExtractor.Content.Readers;
 
-public class XnbStringReader : IXnbTypeReader
+public class StringReader : IXnbTypeReader
 {
     public object Read(XnbContentReader reader)
     {

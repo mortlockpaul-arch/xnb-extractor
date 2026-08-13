@@ -1,10 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using XnbExtractor.Models;
 
-namespace Monogame_Compression.Content.Readers
+namespace XnbExtractor.Content.Readers
 {
-    internal class XnbEffectReader
+    public class XnbEffectReader : IXnbTypeReader
     {
+        public object Read(XnbContentReader reader)
+        {
+            int length = reader.ReadInt32();
+
+            if (length < 0 || length > reader.Remaining)
+            {
+                throw new InvalidOperationException(
+                    $"Invalid effect length {length}, " +
+                    $"remaining bytes: {reader.Remaining}");
+            }
+
+            var effect = new XnbEffect
+            {
+                Data = reader.ReadBytes(length)
+            };
+
+            Console.WriteLine($"Effect data: {effect.Data.Length} bytes");
+
+            return effect;
+        }
     }
 }

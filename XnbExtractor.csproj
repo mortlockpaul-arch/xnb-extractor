@@ -23,14 +23,64 @@
     <None Update="gradient.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="tools\vgmstream\avcodec-vgmstream-59.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\avformat-vgmstream-59.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\avutil-vgmstream-57.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\COPYING">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\libatrac9.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\libcelt-0061.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\libcelt-0110.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\libg719_decode.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\libmpg123-0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\libspeex-1.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\libvorbis.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\README.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\swresample-vgmstream-4.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\USAGE.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\vgmstream-cli.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="tools\vgmstream\vgmstream.vgmstream_Microsoft.Winget.Source_8wekyb3d8bbwe.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\src\Graphics\Effect\**" />
+    <EmbeddedResource Remove="Content\ContentReaders\Fna\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="C:\Users\mortl\.nuget\packages\fna.package\21.7.0\build\..\FNA\**" />
+    <Compile Remove="Content\ContentReaders\Fna\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -1367,6 +1417,7 @@
 
   <ItemGroup>
     <Content Remove="C:\Users\mortl\.nuget\packages\fnalibs\21.7.0\build\..\lib\x86\**" />
+    <None Remove="Content\ContentReaders\Fna\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -1408,12 +1459,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.10" />
     <PackageReference Include="System.Text.Json" Version="10.0.10" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Users\mortl\source\repos\ClassLibrary1\Microsoft.Xna.Framework.csproj" />
+    <Folder Include="Content\ContentReaders\" />
+    <Folder Include="Users\mortl\source\repos\XnbExtractorUi\ViewModels\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\xblig-references\isdf.Runtime.csproj" />
   </ItemGroup>
 
