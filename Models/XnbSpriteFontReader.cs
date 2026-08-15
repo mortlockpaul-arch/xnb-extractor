@@ -8,17 +8,51 @@ using XnbExtractor.Content;
 
 namespace XnbExtractor.Models
 {
-    public class XnbSpriteFont
+    internal class SpriteFontData
     {
-        public XnbTexture Texture { get; set; }
+        public object? Texture { get; }
+        public List<RectangleData> Glyphs { get; }
+        public List<RectangleData> Cropping { get; }
+        public List<char> Characters { get; }
+        public List<Vector3> Kerning { get; }
+        public int LineSpacing { get; }
+        public float Spacing { get; }
+        public char? DefaultCharacter { get; }
 
-        public List<Rectangle> Glyphs { get; } = new();
-        public List<Rectangle> Cropping { get; } = new();
-        public List<char> Characters { get; } = new();
-        public List<Vector3> Kerning { get; } = new();
+        public SpriteFontData(
+            object? texture,
+            List<Rectangle> glyphs,
+            List<Rectangle> cropping,
+            List<char> characters,
+            List<Vector3> kerning,
+            int lineSpacing,
+            float spacing,
+            char? defaultCharacter)
+        {
+            Texture = texture;
+            Glyphs = glyphs.ConvertAll(r => new RectangleData(r));
+            Cropping = cropping.ConvertAll(r => new RectangleData(r));
+            Characters = characters;
+            Kerning = kerning;
+            LineSpacing = lineSpacing;
+            Spacing = spacing;
+            DefaultCharacter = defaultCharacter;
+        }
+    }
 
-        public int LineSpacing { get; set; }
-        public float Spacing { get; set; }
-        public char? DefaultCharacter { get; set; }
+    public class RectangleData
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+
+        public RectangleData(Rectangle rectangle)
+        {
+            X = rectangle.X;
+            Y = rectangle.Y;
+            Width = rectangle.Width;
+            Height = rectangle.Height;
+        }
     }
 }

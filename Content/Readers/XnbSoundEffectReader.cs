@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using XnbExtractor;
 using XnbExtractor.Content;
+using XnbExtractor.Content.Readers;
 using XnbExtractor.Models;
 using XnbExtractor.Xnb;
 

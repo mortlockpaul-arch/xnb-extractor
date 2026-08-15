@@ -5,7 +5,7 @@ using XnbExtractor.Content;
 using static XnbExtractor.Utilities;
 using static XnbExtractor.Utilities.TextureFormatDetector;
 
-namespace XnbExtractor.Writers
+namespace XnbExtractor.Content.Writers
 {
     public static class DdsWriter
     {
@@ -45,7 +45,7 @@ namespace XnbExtractor.Writers
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             using var stream = File.Create(path);
             using var writer = new BinaryWriter(stream);
-            
+
             switch (texture.Format)
             {
                 case TextureFormatDetector.TextureFormat.Alpha8:
@@ -88,6 +88,8 @@ namespace XnbExtractor.Writers
                     break;
 
                 case TextureFormatDetector.TextureFormat.Dxt1:
+                case TextureFormatDetector.TextureFormat.Dxt3:
+                case TextureFormatDetector.TextureFormat.Dxt5:
                     {
                         byte[] xboxData = texture.MipData[0];
 
@@ -96,14 +98,19 @@ namespace XnbExtractor.Writers
                         byte[] dxtData = UntileXbox360Dxt(
                             endianData,
                             texture.Width,
-                            texture.Height);
+                            texture.Height,
+                            texture.Format);
 
                         Console.WriteLine(
-                            $"Xbox DXT1: {xboxData.Length} bytes -> " +
+                            $"{texture.Format}: {xboxData.Length} bytes -> " +
                             $"{endianData.Length} endian-swapped -> " +
                             $"{dxtData.Length} untiled");
 
-                        WriteDxt1Header(writer, texture, dxtData.Length);
+                        WriteDxtHeader(
+                            writer,
+                            texture,
+                            dxtData.Length);
+
                         writer.Write(dxtData);
 
                         break;
@@ -133,33 +140,37 @@ namespace XnbExtractor.Writers
             return result;
         }
 
-        private static byte[] UntileXbox360Dxt(
-    byte[] data,
-    int width,
-    int height)
+        private static byte[] UntileXbox360Dxt( byte[] data, int width, int height, TextureFormatDetector.TextureFormat format)
         {
             int blockWidth = (width + 3) / 4;
             int blockHeight = (height + 3) / 4;
-            int blockSize = 8;
+
+            int blockSize = format switch
+            {
+                TextureFormatDetector.TextureFormat.Dxt1 => 8,
+                TextureFormatDetector.TextureFormat.Dxt3 => 16,
+                TextureFormatDetector.TextureFormat.Dxt5 => 16,
+                _ => throw new NotSupportedException(
+                    $"Unsupported DXT format: {format}")
+            };
 
             int expectedSize =
-                blockWidth * blockHeight * blockSize;
+                blockWidth *
+                blockHeight *
+                blockSize;
 
             if (data.Length != expectedSize)
             {
                 throw new InvalidDataException(
-                    $"Invalid DXT1 size. " +
+                    $"Invalid {format} size. " +
                     $"Expected {expectedSize}, got {data.Length}");
             }
 
             // TEMPORARY:
-            // Return the endian-corrected data unchanged.
-            //
-            // This lets us establish whether the remaining
-            // problem is Xbox tiling rather than the DDS header.
+            // Return endian-corrected data unchanged.
             return data;
         }
-        private static void WriteDxt1Header(
+        private static void WriteDxtHeader(
     BinaryWriter writer,
     XnbTexture texture,
     int dataLength)
@@ -168,6 +179,8 @@ namespace XnbExtractor.Writers
 
             writer.Write(124);
 
+            // DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH |
+            // DDSD_PIXELFORMAT | DDSD_LINEARSIZE
             writer.Write(0x00081007);
 
             writer.Write(texture.Height);
@@ -181,15 +194,24 @@ namespace XnbExtractor.Writers
             for (int i = 0; i < 11; i++)
                 writer.Write(0);
 
+            // DDS_PIXELFORMAT
             writer.Write(32);
             writer.Write(0x4);
-            writer.Write(FourCC("DXT1"));
+            writer.Write(FourCC(texture.Format switch
+            {
+                TextureFormatDetector.TextureFormat.Dxt1 => "DXT1",
+                TextureFormatDetector.TextureFormat.Dxt3 => "DXT3",
+                TextureFormatDetector.TextureFormat.Dxt5 => "DXT5",
+                _ => throw new NotSupportedException(
+                    $"Unsupported compressed format: {texture.Format}")
+            }));
 
             writer.Write(0);
             writer.Write(0);
             writer.Write(0);
             writer.Write(0);
 
+            // DDSCAPS
             writer.Write(0x1000);
 
             writer.Write(0);
@@ -390,51 +412,6 @@ namespace XnbExtractor.Writers
             writer.Write(0);
             writer.Write(0);
             Console.WriteLine($"DDS header position: {writer.BaseStream.Position}");
-        }
-
-        private static void WriteDxt1Header(BinaryWriter writer, XnbTexture texture)
-        {
-            writer.Write(Encoding.ASCII.GetBytes("DDS "));
-
-            // DDS_HEADER
-            writer.Write(124);
-
-            // DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH |
-            // DDSD_PIXELFORMAT | DDSD_LINEARSIZE
-            writer.Write(0x00081007);
-
-            writer.Write(texture.Height);
-            writer.Write(texture.Width);
-
-            // Linear size
-            writer.Write(texture.MipData[0].Length);
-
-            writer.Write(0); // depth
-            writer.Write(texture.MipCount);
-
-            for (int i = 0; i < 11; i++)
-                writer.Write(0);
-
-
-            // DDS_PIXELFORMAT
-            writer.Write(32);        // size
-            writer.Write(0x4);       // DDPF_FOURCC
-            writer.Write(FourCC("DXT1"));
-
-            writer.Write(0);
-            writer.Write(0);
-            writer.Write(0);
-            writer.Write(0);
-
-
-            // DDSCAPS
-            writer.Write(0x1000);    // DDSCAPS_TEXTURE
-
-            writer.Write(0);
-            writer.Write(0);
-            writer.Write(0);
-            writer.Write(0);
-            writer.Write(0); // reserved2
         }
 
 

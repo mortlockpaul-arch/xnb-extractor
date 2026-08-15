@@ -1,12 +1,8 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting.Contexts;
 using XnbExtractor.Content;
-using XnbExtractor.Content.Readers;
 using XnbExtractor.Content.Reflection;
 
 namespace XnbExtractor.Readers
@@ -138,12 +134,54 @@ namespace XnbExtractor.Readers
 
     public static class XnbTypeReaderFactory
     {
-        private static readonly Dictionary<string, IXnbTypeReader> Readers = new();
+        private static readonly Dictionary<string, IXnbTypeReader> Readers = [];
 
         public static void Register(string typeName, IXnbTypeReader reader)
         {
             Readers[typeName] = reader;
         }
+
+        private static object ReadList(string type, XnbContentReader reader)
+        {
+            int count = reader.ReadInt32();
+
+            Console.WriteLine($"List count = {count}");
+            Console.WriteLine($"List type  = {type}");
+
+            if (type.Contains("Microsoft.Xna.Framework.Rectangle"))
+            {
+                var list = new List<Rectangle>(count);
+
+                for (int i = 0; i < count; i++)
+                    list.Add(reader.ReadRectangle());
+
+                return list;
+            }
+
+            if (type.Contains("System.Char"))
+            {
+                var list = new List<char>(count);
+
+                for (int i = 0; i < count; i++)
+                    list.Add(reader.ReadChar());
+
+                return list;
+            }
+
+            if (type.Contains("Microsoft.Xna.Framework.Vector3"))
+            {
+                var list = new List<Vector3>(count);
+
+                for (int i = 0; i < count; i++)
+                    list.Add(reader.ReadVector3());
+
+                return list;
+            }
+
+            throw new NotSupportedException(
+                $"Unsupported ListReader: {type}");
+        }
+
         private static object ReadArray(string type, XnbContentReader reader)
         {
             int count = reader.ReadInt32();
@@ -176,19 +214,23 @@ namespace XnbExtractor.Readers
 
             string shortName = type.Split(',')[0].Trim();
 
-            if (type.StartsWith("isdf.Runtime."))
-                return IsdfRuntimeReaderFactory.ReadType(reader, type);
+            if (Readers.TryGetValue(type, out var readerFactory))
+                return readerFactory.Read(reader);
 
-            if (Readers.TryGetValue(type, out var typeReader))
-                return typeReader.Read(reader);
-
-            if (Readers.TryGetValue(shortName, out typeReader))
-                return typeReader.Read(reader);
+            if (Readers.TryGetValue(shortName, out readerFactory))
+                return readerFactory.Read(reader);
 
             if (shortName.StartsWith("Microsoft.Xna.Framework.Content.ArrayReader`1"))
                 return ReadArray(type, reader);
 
+            if (shortName.StartsWith("Microsoft.Xna.Framework.Content.ListReader`1"))
+                return ReadList(type, reader);
+
+            if (shortName.StartsWith("isdf.Runtime."))
+                return RuntimeReaderFactory.ReadType(reader, type);
+
             return ReflectionReaderFactory.ReadByType(type, reader);
         }
+
     }
 }

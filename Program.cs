@@ -59,11 +59,11 @@ namespace XnbExtractor
 
             if (string.IsNullOrWhiteSpace(input))
             {
-                input = @"C:\PycharmProjects\xenia-game-manager\src\downloads\XBLIG\Downtown SMASH Dodgeball! (World) (XBLIG)\584E07D2\00000002\extracted\584E07D1\";
+                input = @"D:\downloads\XBLIG\Downtown SMASH Dodgeball! (World) (XBLIG)\584E07D2\00000002\extracted\584E07D1\";
             }
             if (string.IsNullOrWhiteSpace(output))
             {
-                output = @"C:\PycharmProjects\xenia-game-manager\src\downloads\XBLIG\Downtown SMASH Dodgeball! (World) (XBLIG)\584E07D2\00000002\extracted\584E07D1\";
+                output = @"D:\downloads\XBLIG\Downtown SMASH Dodgeball! (World) (XBLIG)\584E07D2\00000002\extracted\584E07D1\output\";
             }
 
             Console.WriteLine($"Input      : {input}");
@@ -260,26 +260,11 @@ namespace XnbExtractor
             XnbTypeReaderFactory.Register("Microsoft.Xna.Framework.Content.EffectReader", new XnbEffectReader());
             XnbTypeReaderFactory.Register("Microsoft.Xna.Framework.Content.SongReader", new XnbSongReader());
             XnbTypeReaderFactory.Register("Microsoft.Xna.Framework.Content.Texture2DReader", new XnbTexture2DReader());
-
-            XnbTypeReaderFactory.Register(
-                "Microsoft.Xna.Framework.Content.ModelReader",
-                new XnbModelReader());
-
-            XnbTypeReaderFactory.Register(
-                "Microsoft.Xna.Framework.Content.SpriteFontReader",
-                new SpriteFontReader());
-
-            XnbTypeReaderFactory.Register(
-                "Microsoft.Xna.Framework.Content.StringReader",
-                new Content.Readers.StringReader());
-
-            XnbTypeReaderFactory.Register(
-                "Microsoft.Xna.Framework.Content.Int32Reader",
-                new XnbInt32Reader());
-            XnbTypeReaderFactory.Register(
-                "Microsoft.Xna.Framework.Content.SoundEffectReader",
-                new XnbSoundEffectReader()
-            );
+            XnbTypeReaderFactory.Register( "Microsoft.Xna.Framework.Content.ModelReader", new XnbModelReader());
+            XnbTypeReaderFactory.Register( "Microsoft.Xna.Framework.Content.SpriteFontReader", new SpriteFontReader());
+            XnbTypeReaderFactory.Register( "Microsoft.Xna.Framework.Content.StringReader", new Content.Readers.StringReader());
+            XnbTypeReaderFactory.Register( "Microsoft.Xna.Framework.Content.Int32Reader", new XnbInt32Reader());
+            XnbTypeReaderFactory.Register( "Microsoft.Xna.Framework.Content.SoundEffectReader", new XnbSoundEffectReader() );
         }
 
         private static readonly Dictionary<string, string> XnaMap =

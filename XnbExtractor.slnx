@@ -1,12 +1,16 @@
 <Solution>
   <Configurations>
+    <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="../PycharmProjects/xenia-game-manager/src/downloads/XBLIG/Bacterio (World) (XBLIG)/584E07D2/00000002/decompiled/Bacterio.csproj" />
-  <Project Path="../source/repos/XnbExtractorUi/XnbExtractorUi.csproj" Id="18e87b24-19aa-4d1b-98a9-11b4633e9625" />
-  <Project Path="../xblig-references/isdf.Runtime.csproj" />
-  <Project Path="../xnb-extractor-fna/FNA/FNA.NetFramework.csproj" />
+  <Project Path="../source/repos/XnbExtractorUi/XnbExtractorUi.csproj" Id="18e87b24-19aa-4d1b-98a9-11b4633e9625">
+    <Build Solution="*|x64" Project="false" />
+  </Project>
+  <Project Path="../xnb-extractor-fna/FNA/FNA.NetFramework.csproj">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
   <Project Path="XnbExtractor.csproj">
-    <Platform Project="x86" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
   </Project>
 </Solution>

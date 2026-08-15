@@ -3,7 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 
-namespace XnbExtractor.Writers
+namespace XnbExtractor.Content.Writers
 {
     public static class PngWriter
     {

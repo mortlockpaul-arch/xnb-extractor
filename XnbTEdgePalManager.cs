@@ -1,5 +1,4 @@
-﻿using isdf.Runtime;
-using System;
+﻿using System;
 using XnbExtractor.Models;
 
 namespace XnbExtractor
@@ -217,10 +216,10 @@ namespace XnbExtractor
             };
         }
 
-        public uint[] GetPalAll(TColoring col)
-        {
-            return GetPalAll(col.cEye, col.cSkin, col.cHair, col.cEtc, col.cPantsA, col.cPantsB, col.cPantsC, col.cShirt, col.cShoes);
-        }
+        //public uint[] GetPalAll(TColoring col)
+        //{
+        //    return GetPalAll(col.cEye, col.cSkin, col.cHair, col.cEtc, col.cPantsA, col.cPantsB, col.cPantsC, col.cShirt, col.cShoes);
+        //}
     }
 
 }

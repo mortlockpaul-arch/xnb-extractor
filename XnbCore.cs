@@ -1,11 +1,12 @@
-﻿using isdf.Runtime;
-using NAudio.Wave;
+﻿using NAudio.Wave;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -14,7 +15,6 @@ using XnbExtractor.Content.Readers;
 using XnbExtractor.Content.Writers;
 using XnbExtractor.Models;
 using XnbExtractor.Readers;
-using XnbExtractor.Writers;
 using XnbExtractor.Xnb;
 using static XnbExtractor.Utilities.TextureFormatDetector;
 using File = System.IO.File;
@@ -164,7 +164,7 @@ namespace XnbExtractor
 
             public class LoadedAsset
             {
-                public object Asset { get; init; }
+                public object? Asset { get; init; }
                 public TargetPlatform Platform { get; init; }
             }
 
@@ -197,15 +197,55 @@ namespace XnbExtractor
             public static void ExportAsset(LoadedAsset loaded, string inputFile, string outputFile)
             {
                 Console.WriteLine($"ACTUAL ASSET TYPE: {loaded.Asset?.GetType().AssemblyQualifiedName}");
+
+                if (loaded.Asset == null)
+                {
+                    ExportUnknown(null, outputFile);
+                    return;
+                }
+
+                var type = loaded.Asset.GetType();
+                var typeName = type.FullName;
+
+                // Reflection-based isdf.Runtime types
+                switch (typeName)
+                {
+                    case "isdf.Runtime.TBmp256":
+                        ExportBmp256(loaded.Asset, inputFile, outputFile);
+                        return;
+
+                    case "isdf.Runtime.TEdgePal":
+                        ExportPalette(loaded.Asset, outputFile);
+                        return;
+
+                    case "isdf.Runtime.TEventScriptSheet":
+                        ExportEventScriptSheet(loaded.Asset, outputFile);
+                        return;
+                }
+
+                // Reflection-based isdf.Runtime.TCSVtoArray[]
+                if (loaded.Asset is Array array &&
+                    array.GetType().GetElementType()?.FullName == "isdf.Runtime.TCSVtoArray")
+                {
+                    ExportCsvTables(array, outputFile);
+                    return;
+                }
+
+                // Normal XnbExtractor types
                 switch (loaded.Asset)
                 {
                     case XnbEffect effect:
                         ExportEffect(effect, outputFile);
                         break;
 
+                    case string text:
+                        ExportStrings(text, outputFile);
+                        break;
+
                     case string[] strings:
                         ExportStrings(strings, outputFile);
                         break;
+
                     case XnbTEventScriptSheet sheet:
                         ExportEventScriptSheet(sheet, outputFile);
                         break;
@@ -226,15 +266,15 @@ namespace XnbExtractor
                         ExportModel(model);
                         break;
 
-                    case XnbTEdgePal palette:
-                        ExportPalette(palette, outputFile);
-                        break;
-
                     case XnbTexture texture:
                         ExportTexture(texture, outputFile);
                         break;
 
-                    case XnbSpriteFont font:
+                    case SpriteFontData font:
+                        Console.WriteLine($"SpriteFont glyphs: {font.Glyphs.Count}");
+                        Console.WriteLine($"SpriteFont cropping: {font.Cropping.Count}");
+                        Console.WriteLine($"SpriteFont characters: {font.Characters.Count}");
+                        Console.WriteLine($"SpriteFont kerning: {font.Kerning.Count}");
                         ExportSpriteFont(font, outputFile);
                         break;
 
@@ -259,6 +299,11 @@ namespace XnbExtractor
                         ExportUnknown(loaded.Asset, outputFile);
                         break;
                 }
+            }
+
+            private static string GetAssetTypeName(object asset)
+            {
+                return asset.GetType().FullName ?? asset.GetType().Name;
             }
 
             private static string? FindReferencedAudio(string directory, string fileName)
@@ -582,59 +627,54 @@ namespace XnbExtractor
                 Console.WriteLine($"RIFF size: {riffSize}");
             }
 
-            static void ExportSpriteFont(XnbSpriteFont font, string outputFile)
+            static void ExportSpriteFont(SpriteFontData font, string outputFile)
             {
                 Console.WriteLine("=== SpriteFont Debug ===");
-
-                Console.WriteLine(
-                    $"Characters: {font.Characters.Count}"
-                );
-
-                Console.WriteLine(
-                    $"Glyphs: {font.Glyphs.Count}"
-                );
-
-                Console.WriteLine(
-                    $"Cropping: {font.Cropping.Count}"
-                );
-
-                Console.WriteLine(
-                    $"Texture: {font.Texture.Width}x{font.Texture.Height}"
-                );
-
+                Console.WriteLine($"Characters: {font.Characters.Count}");
+                Console.WriteLine($"Glyphs: {font.Glyphs.Count}");
+                Console.WriteLine($"Cropping: {font.Cropping.Count}");
+                Console.WriteLine($"Kerning: {font.Kerning.Count}");
+                Console.WriteLine($"LineSpacing: {font.LineSpacing}");
+                Console.WriteLine($"Spacing: {font.Spacing}");
+                Console.WriteLine($"DefaultCharacter: {font.DefaultCharacter}");
+                Console.WriteLine( $"SpriteFont texture type: {font.Texture?.GetType().AssemblyQualifiedName}");
                 string directory = Path.GetDirectoryName(outputFile)!;
                 string name = Path.GetFileNameWithoutExtension(outputFile);
 
                 string textureFile = Path.Combine(
                     directory,
-                    name + "_texture.dds"
-                );
+                    name + "_texture.dds");
 
                 string jsonFile = Path.Combine(
                     directory,
-                    name + ".json"
-                );
+                    name + ".json");
 
-
-                // Export texture atlas
-                if (font.Texture != null)
+                if (font.Texture is XnbTexture texture)
                 {
-                    DdsWriter.Write(
-                        font.Texture,
-                        textureFile
-                    );
-                }
+                    Console.WriteLine(
+                        $"Texture: {texture.Width}x{texture.Height}");
 
+                    DdsWriter.Write(
+                        texture,
+                        textureFile);
+                }
+                else
+                {
+                    Console.WriteLine(
+                        $"Unexpected SpriteFont texture type: " +
+                        $"{font.Texture?.GetType().AssemblyQualifiedName}");
+                }
 
                 var metadata = new
                 {
-                    Spacing = font.Spacing,
-                    Characters = font.Characters,
-                    Glyphs = font.Glyphs,
-                    Cropping = font.Cropping,
-                    Kerning = font.Kerning
+                    font.Spacing,
+                    font.LineSpacing,
+                    font.DefaultCharacter,
+                    font.Characters,
+                    font.Glyphs,
+                    font.Cropping,
+                    font.Kerning
                 };
-
 
                 File.WriteAllText(
                     jsonFile,
@@ -643,13 +683,9 @@ namespace XnbExtractor
                         new JsonSerializerOptions
                         {
                             WriteIndented = true
-                        })
-                );
+                        }));
 
-
-                Console.WriteLine(
-                    $"Exported SpriteFont: {name}"
-                );
+                Console.WriteLine($"Exported SpriteFont: {name}");
             }
 
             private static void ExportStrings(string[] strings, string outputFile)
@@ -660,88 +696,162 @@ namespace XnbExtractor
                     Path.GetDirectoryName(textFile)!);
 
                 File.WriteAllLines(textFile, strings);
+                Console.WriteLine("Exported strings to text file {0}", textFile);
             }
 
-            private static void ExportEventScriptSheet(XnbTEventScriptSheet sheet, string outputFile)
+            private static void ExportStrings(string text, string outputFile)
             {
-                var textFile = Path.ChangeExtension(outputFile, ".txt");
+                var textFile = outputFile + ".txt";
 
                 Directory.CreateDirectory(
                     Path.GetDirectoryName(textFile)!);
 
-                File.WriteAllText(textFile, sheet.ToString());
-
-                ExportEventScript(sheet, outputFile);
+                File.WriteAllText(textFile, text);
+                Console.WriteLine("Exported string to text file {0}", textFile);
             }
-            private static void ExportBmp256(XnbTBmp256 bmp, string inputFile, string outputFile)
+
+            private static void ExportEventScriptSheet(object sheet, string outputFile)
             {
+                string textFile = Path.ChangeExtension(outputFile, ".txt");
+                Directory.CreateDirectory(Path.GetDirectoryName(textFile)!);
+
+                var sb = new StringBuilder();
+
+                sb.AppendLine("=== TEventScriptSheet ===");
+                sb.AppendLine();
+
+                var lines = GetMemberValue(sheet, "Lines") as Array;
+
+                sb.AppendLine($"Lines: {lines?.Length ?? 0}");
+                sb.AppendLine();
+
+                if (lines != null)
+                {
+                    for (int i = 0; i < lines.Length; i++)
+                    {
+                        object line = lines.GetValue(i)!;
+
+                        sb.AppendLine($"--- Line {i} ---");
+
+                        AppendMember(sb, line, "ScrType");
+                        AppendMember(sb, line, "ScrVar0");
+                        AppendMember(sb, line, "ScrVar1");
+                        AppendMember(sb, line, "ScrVar2");
+                        AppendMember(sb, line, "ScrVar3");
+
+                        sb.AppendLine($"LoadSentence: {GetMemberValue(line, "LoadSentence")}");
+                        sb.AppendLine($"MoveSentence: {GetMemberValue(line, "MoveSentence")}");
+                        sb.AppendLine();
+                    }
+                }
+
+                File.WriteAllText(textFile, sb.ToString());
+                Console.WriteLine($"Exported TEventScriptSheet: {textFile}");
+            }
+
+            private static void ExportBmp256(object bmp, string inputFile, string outputFile)
+            {
+                int width = (int)GetMemberValue(bmp, "Width")!;
+                int height = (int)GetMemberValue(bmp, "Height")!;
+                byte[] palIdx = (byte[])GetMemberValue(bmp, "PalIdx")!;
+
+                Console.WriteLine($"TBmp256: {width}x{height}");
+                Console.WriteLine($"PalIdx: {palIdx.Length} bytes");
+
                 DirectoryInfo? dir = new FileInfo(inputFile).Directory;
 
                 while (dir != null && dir.Name != "Content")
                     dir = dir.Parent;
 
                 if (dir == null)
-                    throw new DirectoryNotFoundException($"Could not find Content directory for: {inputFile}");
+                    throw new DirectoryNotFoundException(
+                        $"Could not find Content directory for: {inputFile}");
 
                 string contentRoot = dir.FullName;
                 var palettes = new List<XnbTEdgePal>();
 
                 for (int i = 0; ; i++)
                 {
-                    string palFile = Path.Combine(contentRoot, "data", $"pal{i}.xnb");
+                    string palFile = Path.Combine(
+                        contentRoot,
+                        "data",
+                        $"pal{i}.xnb");
 
                     if (!File.Exists(palFile))
                         break;
 
-                    var loaded = LoadAsset(palFile);
-                    Console.WriteLine($"Palette {i}: {loaded.Asset?.GetType().FullName}");
+                    var loadedPalette = LoadAsset(palFile);
+                    var paletteAsset = loadedPalette.Asset;
 
-                    if (loaded.Asset is XnbTEdgePal palette)
-                        palettes.Add(palette);
-                    else
+                    Console.WriteLine(
+                        $"Palette {i}: {paletteAsset?.GetType().FullName}");
+
+                    if (paletteAsset == null)
                         throw new InvalidDataException(
-                            $"Expected XnbTEdgePal in {palFile}, got {loaded.Asset?.GetType().FullName}");
-                }
+                            $"Palette {i} loaded as null: {palFile}");
 
+                    uint[] palARGB = (uint[])GetMemberValue(
+                        paletteAsset,
+                        "PalARGB")!;
+
+                    Console.WriteLine(
+                        $"Palette {i}: {palARGB.Length} colours");
+
+                    palettes.Add(new XnbTEdgePal(palARGB));
+                }
+                Console.WriteLine($"Loaded {palettes.Count} palettes");
                 if (palettes.Count == 0)
-                    throw new InvalidDataException($"No palette XNBs found in {Path.Combine(contentRoot, "data")}");
+                    throw new InvalidDataException(
+                        $"No palette XNBs found in {Path.Combine(contentRoot, "data")}");
 
                 var manager = new XnbTEdgePalManager(palettes.ToArray());
 
                 uint[] paletteData = manager.GetPalAll(
                     0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-                Console.WriteLine($"Extracted TBmp256 {bmp.Width}x{bmp.Height}");
+                Console.WriteLine($"Extracted TBmp256 {width}x{height}");
                 Console.WriteLine($"Palette colours: {paletteData.Length}");
+
+                Directory.CreateDirectory(Path.GetDirectoryName(outputFile)!);
 
                 File.WriteAllBytes(
                     Path.ChangeExtension(outputFile, ".palidx"),
-                    bmp.PalIdx);
+                    palIdx);
 
                 TBmp256PngWriter.Write(
-                    bmp,
+                    width,
+                    height,
+                    palIdx,
                     paletteData,
                     Path.ChangeExtension(outputFile, ".png"));
+
+                Console.WriteLine($"Exported TBmp256 to PNG and palette index file. " + $"{Path.ChangeExtension(outputFile, ".png")}");
             }
 
 
-            private static void ExportCsvTables(XnbTCSVtoArray[] tables, string outputFile)
+            private static void ExportCsvTables(Array tables, string outputFile)
             {
-                string csvFile = Path.ChangeExtension(outputFile, ".csv");
+                var sb = new StringBuilder();
 
-                using var writer = new StreamWriter(csvFile, false, Encoding.UTF8);
-
-                foreach (var table in tables)
+                for (int i = 0; i < tables.Length; i++)
                 {
-                    int count = Math.Min(table.Strings.Length, table.Indices.Length);
+                    var table = tables.GetValue(i)!;
 
-                    for (int i = 0; i < count; i++)
-                        writer.WriteLine($"\"{table.Strings[i].Replace("\"", "\"\"")}\",{table.Indices[i]}");
+                    var strings = (string[])GetMemberValue(table, "stringArray")!;
 
-                    writer.WriteLine();
+                    var values = (int[])GetMemberValue(table, "IntArray")!;
+
+                    sb.AppendLine($"=== Table {i} ===");
+
+                    int count = Math.Min(strings.Length, values.Length);
+
+                    for (int j = 0; j < count; j++)
+                        sb.AppendLine($"{strings[j]} = {values[j]}");
+
+                    sb.AppendLine();
                 }
-
-                Console.WriteLine($"Exported CSV: {csvFile}");
+                Console.WriteLine("Exported CSV tables to text file {0}", Path.ChangeExtension(outputFile, ".txt"));
+                File.WriteAllText(Path.ChangeExtension(outputFile, ".txt"), sb.ToString());
             }
 
             private static void ExportCsvTables(CsvTable[] tables, string outputFile)
@@ -774,20 +884,21 @@ namespace XnbExtractor
                 Console.WriteLine($"Meshes: {model.Meshes.Count}");
             }
 
-            private static void ExportPalette(XnbTEdgePal palette, string outputFile)
+            private static void ExportPalette(object palette, string outputFile)
             {
+                uint[] palARGB = (uint[])GetMemberValue(palette, "PalARGB")!;
+
                 Console.WriteLine("Palette Loaded");
-                Console.WriteLine($"Colours: {palette.PalARGB.Length}");
+                Console.WriteLine($"Colours: {palARGB.Length}");
 
                 using var image = new Bitmap(256, 256);
                 using var g = Graphics.FromImage(image);
 
-                for (int i = 0; i < palette.PalARGB.Length; i++)
+                for (int i = 0; i < palARGB.Length; i++)
                 {
                     int x = (i % 16) * 16;
                     int y = (i / 16) * 16;
-
-                    uint color = palette.PalARGB[i];
+                    uint color = palARGB[i];
 
                     using var brush = new SolidBrush(
                         Color.FromArgb(
@@ -801,12 +912,12 @@ namespace XnbExtractor
 
                 string pngFile = Path.ChangeExtension(outputFile, ".png");
 
-                Directory.CreateDirectory(
-                    Path.GetDirectoryName(pngFile)!);
+                Directory.CreateDirectory(Path.GetDirectoryName(pngFile)!);
 
                 image.Save(
                     pngFile,
                     System.Drawing.Imaging.ImageFormat.Png);
+
                 Console.WriteLine($"Exported palette: {pngFile}");
             }
 
@@ -830,7 +941,7 @@ namespace XnbExtractor
                         ExportTexturePng(texture, pngFile);
                         break;
                     default:
-                        
+
                         Directory.CreateDirectory(Path.GetDirectoryName(pngFile)!);
                         ExportTexturePng(texture, pngFile);
                         break;
@@ -838,7 +949,7 @@ namespace XnbExtractor
             }
 
 
-            private static void ExportTexturePng( XnbTexture texture, string outputFile)
+            private static void ExportTexturePng(XnbTexture texture, string outputFile)
             {
                 if (texture.MipData.Count == 0)
                     throw new InvalidOperationException(
@@ -902,62 +1013,56 @@ namespace XnbExtractor
                 }
             }
 
-            static void ExportEventScript(XnbTEventScriptSheet sheet, string output)
+
+            private static object? GetMemberValue(object obj, string name)
             {
-                var sb = new StringBuilder();
+                var type = obj.GetType();
 
-                sb.AppendLine("=== TEventScriptSheet ===");
-                sb.AppendLine();
+                var property = type.GetProperty(
+                    name,
+                    BindingFlags.Instance |
+                    BindingFlags.Public |
+                    BindingFlags.NonPublic |
+                    BindingFlags.IgnoreCase);
 
-                sb.AppendLine("Lines:");
+                if (property != null)
+                    return property.GetValue(obj);
 
-                for (int i = 0; i < sheet.lines.Length; i++)
+                var field = type.GetField(
+                    name,
+                    BindingFlags.Instance |
+                    BindingFlags.Public |
+                    BindingFlags.NonPublic |
+                    BindingFlags.IgnoreCase);
+
+                return field?.GetValue(obj);
+            }
+
+            private static void AppendMember(
+                StringBuilder sb,
+                object? obj,
+                string name)
+            {
+                if (obj == null)
+                    return;
+
+                var value = GetMemberValue(obj, name);
+
+                if (value == null)
                 {
-                    var line = sheet.lines[i];
-
-                    sb.AppendLine($"--- Line {i} ---");
-
-                    if (line.Strings != null)
-                    {
-                        sb.AppendLine(
-                            "Strings: " +
-                            string.Join(", ", line.Strings)
-                        );
-                    }
-
-                    if (line.Ints1 != null)
-                        sb.AppendLine(
-                            "Ints1: " +
-                            string.Join(", ", line.Ints1)
-                        );
-
-                    if (line.Ints2 != null)
-                        sb.AppendLine(
-                            "Ints2: " +
-                            string.Join(", ", line.Ints2)
-                        );
-
-                    if (line.Ints3 != null)
-                        sb.AppendLine(
-                            "Ints3: " +
-                            string.Join(", ", line.Ints3)
-                        );
-
-                    if (line.Ints4 != null)
-                        sb.AppendLine(
-                            "Ints4: " +
-                            string.Join(", ", line.Ints4)
-                        );
-
-                    sb.AppendLine(
-                        "Text: " + line.Text
-                    );
+                    sb.AppendLine($"{name}: null");
+                    return;
                 }
 
-                File.WriteAllText(
-                    output + ".txt",
-                    sb.ToString()
-                );
+                if (value is Array array)
+                {
+                    sb.AppendLine(
+                        $"{name}: [{string.Join(", ", array.Cast<object>())}]");
+
+                    return;
+                }
+
+                sb.AppendLine($"{name}: {value}");
             }
         }
     }

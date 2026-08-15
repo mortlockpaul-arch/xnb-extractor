@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using XnbExtractor.Content;
+using XnbExtractor.Content.Readers;
 using XnbExtractor.Xnb;
 
 namespace XnbExtractor.Readers;

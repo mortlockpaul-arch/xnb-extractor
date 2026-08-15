@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using XnbExtractor.Content;
 using XnbExtractor.Models;
@@ -11,84 +12,32 @@ namespace XnbExtractor.Content.Readers
     {
         public object Read(XnbContentReader reader)
         {
-            var font = new XnbSpriteFont();
-            Console.WriteLine(
-    $"SpriteFont reader position: {reader.Position}"
-);
+            var texture = reader.ReadObject();
 
-            byte[] peek = reader.ReadBytes(32);
+            var glyphs = reader.ReadObject<List<Rectangle>>();
+            var cropping = reader.ReadObject<List<Rectangle>>();
+            var characters = reader.ReadObject<List<char>>();
 
-            Console.WriteLine(
-                BitConverter.ToString(peek)
-            );
+            int lineSpacing = reader.ReadInt32();
+            float spacing = reader.ReadSingle();
 
-            reader.Seek(reader.Position - 32);
-            font.Texture =
-                (XnbTexture)reader.ReadObject();
+            var kerning = reader.ReadObject<List<Vector3>>();
 
+            char? defaultCharacter = null;
 
-            int glyphCount = reader.ReadInt32();
-            Console.WriteLine($"Glyph count = {glyphCount}");
-            for (int i = 0; i < glyphCount; i++)
-            {
-                font.Glyphs.Add(
-                    ReadRectangle(reader)
-                );
-            }
+            if (reader.ReadBoolean())
+                defaultCharacter = reader.ReadChar();
 
-
-            int croppingCount = reader.ReadInt32();
-            Console.WriteLine($"Cropping count = {croppingCount}");
-            for (int i = 0; i < croppingCount; i++)
-            {
-                font.Cropping.Add(
-                    ReadRectangle(reader)
-                );
-            }
-
-
-            int characterCount = reader.ReadInt32();
-            Console.WriteLine($"Character count = {characterCount}");
-            for (int i = 0; i < characterCount; i++)
-            {
-                font.Characters.Add(
-                    reader.ReadChar()
-                );
-            }
-
-
-            font.Spacing =
-                reader.ReadSingle();
-
-
-            int kerningCount =
-                reader.ReadInt32();
-
-            for (int i = 0; i < kerningCount; i++)
-            {
-                font.Kerning.Add(
-                    ReadVector3(reader)
-                );
-            }
-
-
-            return font;
-        }
-
-        private Vector3 ReadVector3(XnbContentReader reader)
-        {
-            throw new NotImplementedException();
-        }
-
-        private Rectangle ReadRectangle(XnbContentReader reader)
-        {
-            return new Rectangle
-            {
-                X = reader.ReadInt32(),
-                Y = reader.ReadInt32(),
-                Width = reader.ReadInt32(),
-                Height = reader.ReadInt32()
-            };
+            return new SpriteFontData(
+                texture,
+                glyphs,
+                cropping,
+                characters,
+                kerning,
+                lineSpacing,
+                spacing,
+                defaultCharacter);
         }
     }
+
 }

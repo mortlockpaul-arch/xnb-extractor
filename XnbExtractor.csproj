@@ -5,24 +5,11 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
-    <Platforms>x86</Platforms>
+    <Platforms>x86;x64</Platforms>
     <OutputType>Exe</OutputType>
 </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\..\..\..\PycharmProjects\xenia-game-manager\src\downloads\XBLIG\KILLBOX (XBLIG)\extracted\584E07D1\Content\Screens\MainMenu.xnb" Link="MainMenu.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\..\..\..\PycharmProjects\xenia-game-manager\src\downloads\XBLIG\Lunacy (World) (XBLIG)\584E07D2\00000002\extracted\584E07D1\Content\gamefont.xnb" Link="gamefont.xnb" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="gamebackground.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="gradient.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="tools\vgmstream\avcodec-vgmstream-59.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -1467,11 +1454,9 @@
 
   <ItemGroup>
     <Folder Include="Content\ContentReaders\" />
+    <Folder Include="Content\Reflection\" />
     <Folder Include="Users\mortl\source\repos\XnbExtractorUi\ViewModels\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\xblig-references\isdf.Runtime.csproj" />
+    <Folder Include="Writers\" />
   </ItemGroup>
 
   <ItemGroup>

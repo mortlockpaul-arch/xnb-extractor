@@ -1,8 +1,9 @@
 ﻿
+using Microsoft.Xna.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Numerics;
 using System.Runtime.Remoting.Contexts;
 using System.Text;
 using XnbExtractor.Content.Readers;
@@ -11,7 +12,6 @@ using XnbExtractor.Readers;
 
 
 namespace XnbExtractor.Content;
-
 
 public interface IXnbTypeReader
 {
@@ -53,56 +53,6 @@ public class XnbContentReader : IDisposable
         Platform = platform;
     }
 
-    public byte ReadByte()
-    {
-        return reader.ReadByte();
-    }
-    public ushort ReadUInt16()
-    {
-        return reader.ReadUInt16();
-    }
-    public int ReadInt32()
-    {
-        return reader.ReadInt32();
-    }
-
-    public Vector2 ReadVector2()
-    {
-        Vector2 result = new Vector2();
-        result.X = ReadSingle();
-        result.Y = ReadSingle();
-        return result;
-    }
-
-    public Vector3 ReadVector3()
-    {
-        Vector3 result = new Vector3();
-        result.X = ReadSingle();
-        result.Y = ReadSingle();
-        result.Z = ReadSingle();
-        return result;
-    }
-
-    public Vector4 ReadVector4()
-    {
-        Vector4 result = new Vector4();
-        result.X = ReadSingle();
-        result.Y = ReadSingle();
-        result.Z = ReadSingle();
-        result.W = ReadSingle();
-        return result;
-    }
-
-    //public Color ReadColor()
-    //{
-    //    Color result = new Color();
-    //    result.R = ReadByte();
-    //    result.G = ReadByte();
-    //    result.B = ReadByte();
-    //    result.A = ReadByte();
-    //    return result;
-    //}
-
     public static class Log
     {
         public static bool Verbose = true;
@@ -136,39 +86,28 @@ public class XnbContentReader : IDisposable
         {
             Log.Write($"String ({value.Length} chars)");
         }
+        Console.WriteLine(new string('=', 80));
         return value;
     }
-    public uint ReadUInt32() => reader.ReadUInt32();
+    //public uint ReadUInt32() => reader.ReadUInt32();
     public int Read7BitEncodedInt()
     {
-        int count = 0;
+        int value = 0;
         int shift = 0;
 
-        Console.Write($"7-bit bytes @ {Position}: ");
-
-        while (shift < 35)
+        while (true)
         {
-            byte b = reader.ReadByte();
-
-            Console.Write($"{b:X2} ");
-
-            count |= (b & 0x7F) << shift;
+            byte b = ReadByte();
+            value |= (b & 0x7F) << shift;
 
             if ((b & 0x80) == 0)
-            {
-                Console.WriteLine($" -> {count}");
-                return count;
-            }
+                return value;
 
             shift += 7;
+
+            if (shift >= 35)
+                throw new FormatException("Invalid 7-bit encoded integer.");
         }
-
-        throw new FormatException();
-    }
-
-    public byte[] ReadBytes(int count)
-    {
-        return reader.ReadBytes(count);
     }
 
     public void Seek(long position)
@@ -183,6 +122,18 @@ public class XnbContentReader : IDisposable
             return default;
 
         return (T)obj;
+    }
+
+    public object ReadObject(int readerIndex)
+    {
+        if (readerIndex < 0 || readerIndex >= content.Readers.Count)
+            throw new ArgumentOutOfRangeException(nameof(readerIndex));
+
+        string type = content.Readers[readerIndex].Type;
+
+        Console.WriteLine($"ReadObject(readerIndex={readerIndex}) -> {type}");
+
+        return XnbTypeReaderFactory.ReadByType(type, this);
     }
 
     public object? ReadObject()
@@ -207,6 +158,36 @@ public class XnbContentReader : IDisposable
         return XnbTypeReaderFactory.ReadByType(type, this);
     }
 
+
+
+    public List<T> ReadList<T>(int elementReaderIndex)
+    {
+        int count = ReadInt32Platform();
+
+        Console.WriteLine(
+            $"Reading List<{typeof(T).Name}> count={count}, reader={elementReaderIndex}");
+
+        var list = new List<T>(count);
+
+        for (int i = 0; i < count; i++)
+            list.Add((T)ReadObject(elementReaderIndex));
+
+        return list;
+    }
+
+    public Rectangle ReadRectangle() =>
+        new(
+            ReadInt32(),
+            ReadInt32(),
+            ReadInt32(),
+            ReadInt32());
+
+    public Rectangle ReadRectanglePlatform() =>
+        new(
+            ReadInt32Platform(),
+            ReadInt32Platform(),
+            ReadInt32Platform(),
+            ReadInt32Platform());
 
     public void Dispose()
     {
@@ -273,40 +254,59 @@ public class XnbContentReader : IDisposable
 
     }
 
-    private static ushort Swap(ushort value)
-    {
-        return (ushort)(
-            ((value >> 8) & 0x00FF) |
-            ((value << 8) & 0xFF00)
-        );
-    }
+    public byte ReadByte() => reader.ReadByte();
 
-    private static uint Swap(uint value)
-    {
-        return
-            ((value >> 24) & 0x000000FF) |
-            ((value >> 8) & 0x0000FF00) |
-            ((value << 8) & 0x00FF0000) |
-            ((value << 24) & 0xFF000000);
-    }
+    public sbyte ReadSByte() => reader.ReadSByte();
 
-    private static ulong Swap(ulong value)
-    {
-        return
-            ((value & 0x00000000000000FFUL) << 56) |
-            ((value & 0x000000000000FF00UL) << 40) |
-            ((value & 0x0000000000FF0000UL) << 24) |
-            ((value & 0x00000000FF000000UL) << 8) |
-            ((value & 0x000000FF00000000UL) >> 8) |
-            ((value & 0x0000FF0000000000UL) >> 24) |
-            ((value & 0x00FF000000000000UL) >> 40) |
-            ((value & 0xFF00000000000000UL) >> 56);
-    }
+    public bool ReadBoolean() => reader.ReadBoolean();
+
+    public ushort ReadUInt16() => reader.ReadUInt16();
+
+    public short ReadInt16() => reader.ReadInt16();
+
+    public uint ReadUInt32() => reader.ReadUInt32();
+
+    public int ReadInt32() => reader.ReadInt32();
+
+    public ulong ReadUInt64() => reader.ReadUInt64();
+
+    public long ReadInt64() => reader.ReadInt64();
+
+    public float ReadSingle() => reader.ReadSingle();
+
+    public double ReadDouble() => reader.ReadDouble();
+
+    public char ReadChar() => reader.ReadChar();
+
+    public byte[] ReadBytes(int count) => reader.ReadBytes(count);
+
+    private static ushort Swap(ushort value) =>
+        (ushort)((value >> 8) | (value << 8));
+
+    private static uint Swap(uint value) =>
+        ((value >> 24) & 0x000000FF) |
+        ((value >> 8) & 0x0000FF00) |
+        ((value << 8) & 0x00FF0000) |
+        ((value << 24) & 0xFF000000);
+
+    private static ulong Swap(ulong value) =>
+        ((value & 0x00000000000000FFUL) << 56) |
+        ((value & 0x000000000000FF00UL) << 40) |
+        ((value & 0x0000000000FF0000UL) << 24) |
+        ((value & 0x00000000FF000000UL) << 8) |
+        ((value & 0x000000FF00000000UL) >> 8) |
+        ((value & 0x0000FF0000000000UL) >> 24) |
+        ((value & 0x00FF000000000000UL) >> 40) |
+        ((value & 0xFF00000000000000UL) >> 56);
+
     public ushort ReadUInt16Platform()
     {
         ushort value = reader.ReadUInt16();
         return IsBigEndian ? Swap(value) : value;
     }
+
+    public short ReadInt16Platform() =>
+        unchecked((short)ReadUInt16Platform());
 
     public uint ReadUInt32Platform()
     {
@@ -314,15 +314,8 @@ public class XnbContentReader : IDisposable
         return IsBigEndian ? Swap(value) : value;
     }
 
-    public short ReadInt16Platform()
-    {
-        return unchecked((short)ReadUInt16Platform());
-    }
-
-    public int ReadInt32Platform()
-    {
-        return unchecked((int)ReadUInt32Platform());
-    }
+    public int ReadInt32Platform() =>
+        unchecked((int)ReadUInt32Platform());
 
     public ulong ReadUInt64Platform()
     {
@@ -330,10 +323,8 @@ public class XnbContentReader : IDisposable
         return IsBigEndian ? Swap(value) : value;
     }
 
-    public long ReadInt64Platform()
-    {
-        return unchecked((long)ReadUInt64Platform());
-    }
+    public long ReadInt64Platform() =>
+        unchecked((long)ReadUInt64Platform());
 
     public float ReadSinglePlatform()
     {
@@ -354,23 +345,22 @@ public class XnbContentReader : IDisposable
 
         return BitConverter.ToDouble(bytes, 0);
     }
-    public float ReadSingle()
-    {
-        return reader.ReadSingle();
-    }
 
-    public bool ReadBoolean()
-    {
-        return reader.ReadBoolean();
-    }
+    public Vector2 ReadVector2() =>
+    new(ReadSingle(), ReadSingle());
 
-    public char ReadChar()
-    {
-        return reader.ReadChar();
-    }
+    public Vector3 ReadVector3() =>
+        new(ReadSingle(), ReadSingle(), ReadSingle());
 
-    //internal T ReadObject<T>(ContentTypeReader elementReader)
-    //{
-    //    throw new NotImplementedException();
-    //}
+    public Vector4 ReadVector4() =>
+        new(ReadSingle(), ReadSingle(), ReadSingle(), ReadSingle());
+
+    public Vector2 ReadVector2Platform() =>
+        new(ReadSinglePlatform(), ReadSinglePlatform());
+
+    public Vector3 ReadVector3Platform() =>
+        new(ReadSinglePlatform(), ReadSinglePlatform(), ReadSinglePlatform());
+
+    public Vector4 ReadVector4Platform() =>
+        new(ReadSinglePlatform(), ReadSinglePlatform(), ReadSinglePlatform(), ReadSinglePlatform());
 }

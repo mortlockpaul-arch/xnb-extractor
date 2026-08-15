@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using XnbExtractor.Content;
+using XnbExtractor.Content.Readers;
 using XnbExtractor.Xnb;
 using static XnbExtractor.Utilities;
 using static XnbExtractor.Utilities.TextureFormatDetector;
