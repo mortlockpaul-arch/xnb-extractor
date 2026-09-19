@@ -36,6 +36,18 @@ namespace XnbExtractor
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr GetStdHandle(int nStdHandle);
 
+        private const int MF_BYCOMMAND = 0x00000000;
+        public const int SC_CLOSE = 0xF060;
+
+        [DllImport("user32.dll")]
+        public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+
+        [DllImport("kernel32.dll", ExactSpelling = true)]
+        private static extern IntPtr GetConsoleWindow();
+
         static void SetConsoleFont(short size)
         {
             var font = new CONSOLE_FONT_INFOEX
@@ -53,8 +65,6 @@ namespace XnbExtractor
                 Console.WriteLine($"Failed to set console font: {Marshal.GetLastWin32Error()}");
         }
 
-        private static string inputRoot;
-        private static string outputRoot;
         private static bool scanCs;
         private static bool scanContent;
 
@@ -73,8 +83,9 @@ namespace XnbExtractor
             Console.SetOut(new TeeTextWriter(Console.Out, logfile));
             Console.SetError(new TeeTextWriter(Console.Error, logfile));
 
-            Console.SetWindowSize(120, 40);
+            Console.SetWindowSize(160, 40);
             //SetConsoleFont(8);
+            DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), SC_CLOSE, MF_BYCOMMAND);
 
             string input = "";
             string output = "";
@@ -84,8 +95,7 @@ namespace XnbExtractor
             bool compressXnb = false;
             bool convert_to_windows = false;
             bool playaudio = false;
-            scanCs = true;
-            scanContent = true;
+
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -158,10 +168,10 @@ namespace XnbExtractor
 #endif
 
             if (!Directory.Exists(output)) Directory.CreateDirectory(output);
-            inputRoot = Directory.Exists(input) ? input : Path.GetDirectoryName(input) ?? input;
-            outputRoot = Directory.Exists(output) ? output : Path.GetDirectoryName(output) ?? output;
+            InputRoot = Directory.Exists(input) ? input : Path.GetDirectoryName(input) ?? input;
+            OutputRoot = Directory.Exists(output) ? output : Path.GetDirectoryName(output) ?? output;
 
-            if (!Directory.Exists(inputRoot)) Directory.CreateDirectory(inputRoot);
+            if (!Directory.Exists(InputRoot)) Directory.CreateDirectory(InputRoot);
 
             AnsiConsole.MarkupLine("[bold cyan] XNB Extractor[/]");
 
@@ -172,9 +182,8 @@ namespace XnbExtractor
 
             table.AddRow("Input", input);
             table.AddRow("Output", output);
-            table.AddRow("Input Root", inputRoot);
-            table.AddRow("Output Root", outputRoot);
-
+            table.AddRow("Input Root", InputRoot);
+            table.AddRow("Output Root", OutputRoot);
             table.AddRow("Loader", loader.ToString());
             table.AddRow("Parser", parser.ToString());
             table.AddRow("Compress XNB", compressXnb.ToString());
@@ -185,28 +194,24 @@ namespace XnbExtractor
             table.AddRow("Scan Content for Audio", scanContent.ToString());
 
             AnsiConsole.Write(table);
-            //AnsiConsole.Write(
-            //    new Panel(table)
-            //        .Header("XNB Extractor")
-            //        .Border(BoxBorder.Rounded));
 
             RegisterReaders();
-
 
             int succeeded = 0;
             int failed = 0;
 
             if (scanContent)
             {
-                ScanContentForAudio(inputRoot);
+                ScanContentForAudio(InputRoot);
             }
             if (scanCs)
             {
-                ScanCsForAudio(inputRoot);
+                ScanCsForAudio(InputRoot);
             }
             if(scanContent || scanCs)
             {
-                Console.WriteLine("Audio scan complete.");
+                Console.WriteLine("Audio scan complete. Press any key to exit.");
+                Console.ReadKey();
                 return;
             }
             bool flowControl = ProcessOneOrMoreFiles(input, loader, parser);
@@ -247,7 +252,7 @@ namespace XnbExtractor
         private static void ScanContentForAudio(string root)
         {
             string rootPath = Path.GetFullPath(root);
-            string outputPath = Path.GetFullPath(outputRoot);
+            string outputPath = Path.GetFullPath(OutputRoot);
 
             var audioFiles = Directory
                 .EnumerateFiles(rootPath, "*.*", SearchOption.AllDirectories)
@@ -334,7 +339,7 @@ namespace XnbExtractor
         private static void ScanCsForAudio(string root)
         {
             string rootPath = Path.GetFullPath(root);
-            string outputPath = Path.GetFullPath(outputRoot);
+            string outputPath = Path.GetFullPath(OutputRoot);
 
             var csFiles = Directory.EnumerateFiles(
                 rootPath,
@@ -526,7 +531,7 @@ namespace XnbExtractor
                 return $"vgmstream not found: {vgmstream}";
 
             string output = Path.Combine(
-                outputRoot,
+                OutputRoot,
                 Path.GetFileNameWithoutExtension(file) + ".wav");
             var psi = new ProcessStartInfo
             {
@@ -621,7 +626,7 @@ namespace XnbExtractor
             }
             else { Console.WriteLine($"FAILED| Path not found: {input}"); }
 
-            if (playaudio) { XnbCore.PlayExportedAudio(outputRoot); }
+            if (playaudio) { XnbCore.PlayExportedAudio(OutputRoot); }
             Environment.Exit(failed == 0 ? 0 : 1);
             return true;
         }
@@ -769,6 +774,8 @@ namespace XnbExtractor
             };
 
         public static bool extract { get; private set; }
+        public static string OutputRoot { get; set; }
+        public static string InputRoot { get; set; }
 
         public static class XnaAssemblyResolver
         {

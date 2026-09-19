@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net481</TargetFramework>
+		<TargetFramework>net9.0-windows</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<UseWindowsForms>true</UseWindowsForms>
 		<Platforms>x86;x64</Platforms>
 		<OutputType>Exe</OutputType>
+		<StartupObject>XnbExtractor.Program</StartupObject>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -26,12 +27,11 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="fnalibs" Version="21.7.0" />
-		<PackageReference Include="NAudio" Version="2.3.0" />
+		<PackageReference Include="NAudio" Version="3.1.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="Spectre.Console" Version="0.57.2" />
-		<PackageReference Include="System.Drawing.Common" Version="10.0.10" />
-		<PackageReference Include="System.Text.Json" Version="10.0.10" />
+		<PackageReference Include="System.Drawing.Common" Version="10.0.12" />
+		<PackageReference Include="System.Text.Json" Version="10.0.12" />
 	</ItemGroup>
 
 	<ItemGroup>

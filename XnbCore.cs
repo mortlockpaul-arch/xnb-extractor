@@ -1,6 +1,5 @@
 ﻿using NAudio.Wave;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -18,6 +17,7 @@ using XnbExtractor.Readers;
 using XnbExtractor.Xnb;
 using static XnbExtractor.Utilities.TextureFormatDetector;
 using File = System.IO.File;
+
 namespace XnbExtractor
 {
     internal static partial class Program
@@ -62,9 +62,9 @@ namespace XnbExtractor
             }
             public static void ProcessFile(string inputFile, bool runLoaderTest, bool runParserTest)
             {
-                string relative = Utilities.GetRelativePath(inputRoot, inputFile);
+                string relative = Utilities.GetRelativePath(InputRoot, inputFile);
 
-                string outputFile = Path.Combine(outputRoot, Path.ChangeExtension(relative, ".temp"));
+                string outputFile = Path.Combine(OutputRoot, Path.ChangeExtension(relative, ".temp"));
 
                 Console.WriteLine();
                 Console.WriteLine(new string('=', 80));
@@ -372,12 +372,12 @@ namespace XnbExtractor
 
                 // Preserve the original directory structure relative to Content.
                 string relative = Utilities.GetRelativePath(
-                    inputRoot,
+                    InputRoot,
                     sourceFile);
 
                 // Convert the referenced audio to WAV.
                 string wavOutput = Path.Combine(
-                    outputRoot,
+                    OutputRoot,
                     Path.ChangeExtension(relative, ".wav"));
 
                 Directory.CreateDirectory(
@@ -479,7 +479,7 @@ namespace XnbExtractor
             private static void PlayWave(string filename)
             {
                 using var reader = new AudioFileReader(filename);
-                using var player = new WaveOutEvent();
+                using var player = new WaveOut();
 
                 player.Init(reader);
                 player.Play();
