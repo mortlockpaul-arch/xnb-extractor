@@ -3,11 +3,9 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="../source/repos/XnbExtractorUi/XnbExtractorUi.csproj" Id="18e87b24-19aa-4d1b-98a9-11b4633e9625">
-    <Build Solution="*|x64" Project="false" />
-  </Project>
-  <Project Path="../xnb-extractor-fna/FNA/FNA.NetFramework.csproj">
+  <Project Path="../Indie-Games/FNA/FNA.NetFramework.csproj">
     <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
   </Project>
   <Project Path="XnbExtractor.csproj">
     <Platform Solution="*|x64" Project="x64" />

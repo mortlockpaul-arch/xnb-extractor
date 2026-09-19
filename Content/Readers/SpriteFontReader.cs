@@ -1,9 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using XnbExtractor.Content;
 using XnbExtractor.Models;
 
 namespace XnbExtractor.Content.Readers

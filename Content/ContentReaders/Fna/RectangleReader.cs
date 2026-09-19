@@ -9,6 +9,8 @@
  * Released under the MIT License. See monoxna.LICENSE for details.
  */
 
+using Microsoft.Xna.Framework;
+
 namespace XnbExtractor.Content.ContentReaders.Fna
 {
 	internal class RectangleReader : ContentTypeReader<Rectangle>

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
+using XnbExtractor.Compression;
+using XnbExtractor.Content.Readers;
 
 namespace XnbExtractor.Content.ContentReaders.Fna
 {

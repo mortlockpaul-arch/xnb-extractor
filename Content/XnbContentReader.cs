@@ -1,12 +1,8 @@
-﻿
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Remoting.Contexts;
 using System.Text;
-using XnbExtractor.Content.Readers;
 using XnbExtractor.Content.Writers;
 using XnbExtractor.Readers;
 
