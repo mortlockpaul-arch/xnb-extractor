@@ -41,11 +41,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Indie-Games\FNA\FNA.NetFramework.csproj">
-		  <ReferenceOutputAssembly>True</ReferenceOutputAssembly>
-		  <Private>True</Private>
-		  <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
-		</ProjectReference>
+	  <ProjectReference Include="..\Indie-Games\library-projects\fna.contents.libraries\FNA.Contents.csproj" />
 	</ItemGroup>
 
 </Project>

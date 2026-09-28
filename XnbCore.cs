@@ -1,4 +1,6 @@
-﻿using NAudio.Wave;
+﻿using Microsoft.Xna.Framework.Audio;
+using NAudio.Wave;
+using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -62,34 +64,59 @@ namespace XnbExtractor
             }
             public static void ProcessFile(string inputFile, bool runLoaderTest, bool runParserTest)
             {
+                if (!string.Equals(Path.GetExtension(inputFile), ".xnb", StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+
                 string relative = Utilities.GetRelativePath(InputRoot, inputFile);
 
                 string outputFile = Path.Combine(OutputRoot, Path.ChangeExtension(relative, ".temp"));
 
-                Console.WriteLine();
-                Console.WriteLine(new string('=', 80));
-                Console.WriteLine($"Input File: {inputFile}");
-                Console.WriteLine($"Output File: {outputFile}");
-                Console.WriteLine(new string('=', 80));
+                var table = new Table()
+                    .Border(TableBorder.Rounded)
+                    .AddColumn("Property")
+                    .AddColumn("Value");
 
-                if (runLoaderTest)
-                    TestLoaderGame(inputFile);
+                table.AddRow("Input", Markup.Escape(inputFile));
+                table.AddRow("Output", Markup.Escape(outputFile));
+
+                AnsiConsole.Write(table);
 
                 if (runParserTest)
-                    ParseXnb(inputFile, outputFile);
+                    ParseXnb(inputFile, outputFile, runLoaderTest);
+            }
+
+            private static readonly HashSet<string> excludedFolders =
+                new(["bin", "obj", "Output"], StringComparer.OrdinalIgnoreCase);
+
+            public static bool runLoaderTest { get; set; }
+
+            private static IEnumerable<string> EnumerateFilesExcluding(
+                string root,
+                string pattern)
+            {
+                foreach (string file in Directory.EnumerateFiles(root, pattern))
+                    yield return file;
+
+                foreach (string directory in Directory.EnumerateDirectories(root))
+                {
+                    if (excludedFolders.Contains(Path.GetFileName(directory)))
+                        continue;
+
+                    foreach (string file in EnumerateFilesExcluding(directory, pattern))
+                        yield return file;
+                }
             }
 
             public static List<FileInfo> ListDllFiles(string root, int? limit = null)
             {
-                var files = Directory.GetFiles(
-                        root,
-                        "*.dll",
-                        SearchOption.AllDirectories)
+                IEnumerable<FileInfo> files = EnumerateFilesExcluding(root, "*.dll")
                     .Select(f => new FileInfo(f))
                     .OrderByDescending(f => f.Length);
 
                 if (limit.HasValue)
-                    files = (IOrderedEnumerable<FileInfo>)files.Take(limit.Value);
+                    files = files.Take(limit.Value);
 
                 var list = files.ToList();
 
@@ -106,10 +133,9 @@ namespace XnbExtractor
 
                 return list;
             }
-
             public static List<FileInfo> ListXnbFiles(string root, int? limit = null)
             {
-                var files = Directory.GetFiles(
+                IEnumerable<FileInfo> files = Directory.GetFiles(
                         root,
                         "*.xnb",
                         SearchOption.AllDirectories)
@@ -127,7 +153,10 @@ namespace XnbExtractor
                 //else { Console.WriteLine("Overwrite option is enabled."); }
 
                 if (limit.HasValue)
-                    files = (IOrderedEnumerable<FileInfo>)files.Take(limit.Value);
+                {
+                    Console.WriteLine($"Limiting to {limit.Value} files.");
+                    files = files.Take(limit.Value);
+                }
 
                 var list = files.ToList();
 
@@ -145,25 +174,17 @@ namespace XnbExtractor
                 return list;
             }
 
-            static void TestLoaderGame(string inputFile)
-            {
-                Console.WriteLine();
-                Console.WriteLine("=== LoaderGame Test ===");
-
-                try
-                {
-                    using var loaderGame = new LoaderGame(inputFile);
-
-                    Console.WriteLine("LoaderGame loaded successfully.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"LoaderGame failed: {ex}");
-                }
-            }
-
             public class LoadedAsset
             {
+                public LoadedAsset()
+                {
+                }
+
+                public LoadedAsset(XnbEffect effect)
+                {
+                    Asset = effect;
+                }
+
                 public object? Asset { get; init; }
                 public TargetPlatform Platform { get; init; }
             }
@@ -194,7 +215,7 @@ namespace XnbExtractor
                 };
             }
 
-            public static void ExportAsset(LoadedAsset loaded, string inputFile, string outputFile)
+            public static void ExportAsset(LoadedAsset loaded, string inputFile, string outputFile, bool runLoaderTest)
             {
                 Console.WriteLine($"ACTUAL ASSET TYPE: {loaded.Asset?.GetType().AssemblyQualifiedName}");
 
@@ -299,6 +320,9 @@ namespace XnbExtractor
                         ExportUnknown(loaded.Asset, outputFile);
                         break;
                 }
+                XnbWriter.Write(outputFile, new XnbContent(), loaded, runLoaderTest);
+
+
             }
 
             private static string GetAssetTypeName(object asset)
@@ -407,6 +431,15 @@ namespace XnbExtractor
                         ExportRaw(soundEffect, outputFile);
                         break;
                 }
+
+                string baseName = Path.Combine(
+     Path.GetDirectoryName(outputFile)!,
+     Path.GetFileNameWithoutExtension(outputFile));
+
+                string xnb = baseName + ".xnb";
+                var dir = Path.GetDirectoryName(outputFile);
+
+
             }
 
             public static void PlayExportedAudio(string outputRoot)
@@ -580,7 +613,8 @@ namespace XnbExtractor
                 XnbWriter.Write(
                     xnb,
                     new XnbContent(),
-                    effect);
+                    new LoadedAsset(effect),
+                    false);
 
                 Console.WriteLine($"Exported Windows XNB: {xnb}");
             }
@@ -637,7 +671,7 @@ namespace XnbExtractor
                 Console.WriteLine($"LineSpacing: {font.LineSpacing}");
                 Console.WriteLine($"Spacing: {font.Spacing}");
                 Console.WriteLine($"DefaultCharacter: {font.DefaultCharacter}");
-                Console.WriteLine( $"SpriteFont texture type: {font.Texture?.GetType().AssemblyQualifiedName}");
+                Console.WriteLine($"SpriteFont texture type: {font.Texture?.GetType().AssemblyQualifiedName}");
                 string directory = Path.GetDirectoryName(outputFile)!;
                 string name = Path.GetFileNameWithoutExtension(outputFile);
 
@@ -901,7 +935,7 @@ namespace XnbExtractor
                     uint color = palARGB[i];
 
                     using var brush = new SolidBrush(
-                        Color.FromArgb(
+                        System.Drawing.Color.FromArgb(
                             (byte)(color >> 24),
                             (byte)(color >> 16),
                             (byte)(color >> 8),
@@ -996,16 +1030,24 @@ namespace XnbExtractor
                     $"Exported unknown asset {asset.GetType()}");
             }
 
-            static void ParseXnb(string inputFile, string outputFile)
+            static void ParseXnb(string inputFile, string outputFile, bool runLoaderTest)
             {
                 try
                 {
-                    var asset = LoadAsset(inputFile);
+                    LoadedAsset asset = LoadAsset(inputFile);
+                    if (asset.Asset == null)
+                    {
+                        Console.WriteLine($"Loaded asset is null for file: {inputFile}");
+                        return;
+                    }
+                    string type = asset.Asset.GetType().FullName ?? asset.Asset.GetType().Name;
 
+                    Console.WriteLine($"Loaded asset type: {type}");
                     Console.WriteLine($"Asset: {asset.Asset.GetType().Name}");
                     Console.WriteLine($"Platform: {asset.Platform}");
 
-                    ExportAsset(asset, inputFile, outputFile);
+                    ExportAsset(asset, inputFile, outputFile, runLoaderTest);
+
                 }
                 catch (Exception ex)
                 {

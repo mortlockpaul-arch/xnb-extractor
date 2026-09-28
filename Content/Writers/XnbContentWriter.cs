@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using XnbExtractor.Models;
+using static XnbExtractor.Program.XnbCore;
 
 
 
@@ -14,9 +16,12 @@ namespace XnbExtractor.Content.Writers
     {
         private readonly BinaryWriter writer;
 
-        public XnbContentWriter(Stream stream)
+        public XnbPlatform Platform { get; }
+
+        public XnbContentWriter(Stream stream, XnbPlatform platform)
         {
-            writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true);
+            writer = new BinaryWriter(stream);
+            Platform = platform;
         }
 
         public void Write7BitEncodedInt(int value)
@@ -69,6 +74,39 @@ namespace XnbExtractor.Content.Writers
         {
             writer.Flush();
         }
+
+        internal void WriteUInt32(uint value)
+        {
+            if (Platform == XnbPlatform.Xbox360)
+            {
+                writer.Write((byte)(value >> 24));
+                writer.Write((byte)(value >> 16));
+                writer.Write((byte)(value >> 8));
+                writer.Write((byte)value);
+            }
+            else
+            {
+                writer.Write(value);
+            }
+        }
+        internal void WriteUInt16(ushort value)
+        {
+            if (Platform == XnbPlatform.Xbox360)
+            {
+                writer.Write((byte)(value >> 8));
+                writer.Write((byte)value);
+            }
+            else
+            {
+                writer.Write(value);
+            }
+        }
+
+        public enum XnbPlatform
+        {
+            Windows = 0,
+            Xbox360 = 2
+        }
     }
 
     public sealed class XnbReaderInfo
@@ -89,13 +127,31 @@ namespace XnbExtractor.Content.Writers
             writer.WriteBytes(effect.Data);
         }
 
-        public static void Write(
-    string outputFile,
-    XnbContent content,
-    object asset)
+        static void TestLoaderGame(LoadedAsset loaded, string inputFile)
         {
+            try
+            {
+                if (Path.GetExtension(inputFile).Equals(".xnb", StringComparison.OrdinalIgnoreCase))
+                {
+                    var loaderGame = new LoaderGame(inputFile, loaded);
+                    Console.WriteLine("LoaderGame loaded successfully.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"LoaderGame failed: {ex}");
+            }
+        }
+
+        internal static void Write( string outputFile, XnbContent content, LoadedAsset asset, bool runLoaderTest)
+        {
+
+            Console.WriteLine($"Exported Windows XNB: {outputFile}");
+            if (runLoaderTest)
+                TestLoaderGame(asset, outputFile);
+
             using var bodyStream = new MemoryStream();
-            using var bodyWriter = new XnbContentWriter(bodyStream);
+            using var bodyWriter = new XnbContentWriter(bodyStream, XnbContentWriter.XnbPlatform.Windows);
 
             // ------------------------------------------------------------
             // Reader table
@@ -105,7 +161,7 @@ namespace XnbExtractor.Content.Writers
 
             string readerType;
 
-            switch (asset)
+            switch (asset.Asset)
             {
                 case XnbEffect:
                     readerType =
@@ -122,7 +178,14 @@ namespace XnbExtractor.Content.Writers
                         "PublicKeyToken=842cf8be1de50553";
                     XnbTexture2DWriter.Write(bodyWriter, texture);
                     break;
-
+                case XnbSoundEffect soundEffect:
+                    readerType =
+                        "Microsoft.Xna.Framework.Content.SoundEffectReader  , " +
+                        "Microsoft.Xna.Framework.Graphics, " +
+                        "Version=4.0.0.0, Culture=neutral, " +
+                        "PublicKeyToken=842cf8be1de50553";
+                    XnbSoundEffectWriter.Write(bodyWriter, soundEffect);
+                    break;
                 default:
                     throw new NotSupportedException(
                         $"Unsupported XNB asset type: {asset.GetType().FullName}");
@@ -144,7 +207,7 @@ namespace XnbExtractor.Content.Writers
             // Asset
             // ------------------------------------------------------------
 
-            switch (asset)
+            switch (asset.Asset)
             {
                 case XnbEffect effect:
                     WriteEffect(bodyWriter, effect);

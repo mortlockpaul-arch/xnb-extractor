@@ -7,11 +7,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using XnbExtractor.Content.Readers;
 using XnbExtractor.Readers;
+using static System.Net.WebRequestMethods;
 using File = System.IO.File;
 
 [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -67,6 +69,8 @@ namespace XnbExtractor
 
         private static bool scanCs;
         private static bool scanContent;
+        private static int? limit;
+        private static readonly HashSet<string> excludedFolders = new HashSet<string>(["bin", "obj", "Output"], StringComparer.OrdinalIgnoreCase);
 
         static void Main(string[] args)
         {
@@ -95,7 +99,23 @@ namespace XnbExtractor
             bool compressXnb = false;
             bool convert_to_windows = false;
             bool playaudio = false;
+#if DEBUG
+            loader = true;
+            parser = true;
+            limit = null;
+            scanCs = true;
+            scanContent = true;
+            playaudio = false;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                input = @"C:\source\Indie-Games\indie-game-archive\One Night Two Crazies (World) (XBLIG)\";
+            }
 
+            if (string.IsNullOrWhiteSpace(output))
+            {
+                output = @"C:\source\Indie-Games\indie-game-archive\One Night Two Crazies (World) (XBLIG)\Output";
+            }
+#endif
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -131,41 +151,38 @@ namespace XnbExtractor
                     case "--playaudio": playaudio = true; break;
                     case "--scan-cs": scanCs = true; break;
                     case "--scan-content": scanContent = true; break;
+                    case "--limit":
+                        if (++i >= args.Length || !int.TryParse(args[i], out int tempLimit))
+                        {
+                            Console.WriteLine("Error: --limit requires an integer value.");
+                            PrintHelp();
+                            return;
+                        }
+                        limit = tempLimit;
+                        break;
                 }
             }
 
             if (args.Contains("--help") || args.Contains("-h"))
             {
                 PrintHelp();
-#if !DEBUG
-                    Console.WriteLine();
-                    Console.WriteLine("Press Enter to exit...");
-                    Console.ReadLine();
-#endif
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to exit...");
+                Console.ReadLine();
                 return;
             }
 
-#if DEBUG
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                input = @"C:\source\Indie-Games\indie-game-archive\invAIders (World) (XBLIG)\";
-            }
 
-            if (string.IsNullOrWhiteSpace(output))
-            {
-                output = @"C:\source\Indie-Games\indie-game-archive\invAIders (World) (XBLIG)\Output";
-            }
-#else
+
             if (string.IsNullOrWhiteSpace(input) || string.IsNullOrWhiteSpace(output))
-                {
-                    PrintHelp();
+            {
+                PrintHelp();
 
-                    Console.WriteLine();
-                    Console.WriteLine("Press Enter to exit...");
-                    Console.ReadLine();
-                    return;
-                }
-#endif
+                Console.WriteLine();
+                Console.WriteLine("Press Enter to exit...");
+                Console.ReadLine();
+                return;
+            }
 
             if (!Directory.Exists(output)) Directory.CreateDirectory(output);
             InputRoot = Directory.Exists(input) ? input : Path.GetDirectoryName(input) ?? input;
@@ -192,39 +209,35 @@ namespace XnbExtractor
             table.AddRow("Play Audio", playaudio.ToString());
             table.AddRow("Scan Source for Audio", scanCs.ToString());
             table.AddRow("Scan Content for Audio", scanContent.ToString());
-
+            table.AddRow("Limit Content Scan", limit?.ToString() ?? "None");
             AnsiConsole.Write(table);
 
             RegisterReaders();
-
+            LoadGameDependencies(input);
             int succeeded = 0;
             int failed = 0;
+            List<AudioReference> audioReferences = new List<AudioReference>();
 
             if (scanContent)
             {
                 ScanContentForAudio(InputRoot);
+                Console.WriteLine("Audio content scan complete.");
+                Console.ReadKey();
             }
             if (scanCs)
             {
-                ScanCsForAudio(InputRoot);
-            }
-            if(scanContent || scanCs)
-            {
-                Console.WriteLine("Audio scan complete. Press any key to exit.");
+                audioReferences = ScanCsForAudio(InputRoot);
+                Console.WriteLine("Source code scan complete.");
                 Console.ReadKey();
-                return;
-            }
-            bool flowControl = ProcessOneOrMoreFiles(input, loader, parser);
-            if (flowControl)
-            {
-                return;
             }
 
-            flowControl = ProcessFolder(input, loader, parser, playaudio, ref succeeded, ref failed);
-            if (flowControl)
-            {
-                return;
-            }
+            ProcessOneOrMoreFiles(input, loader, parser, audioReferences, ref succeeded, ref failed, limit: limit);
+
+            if (playaudio) { XnbCore.PlayExportedAudio(OutputRoot); }
+
+            Console.WriteLine("xnb-extractor complete. Press any key to exit.");
+            Console.ReadKey();
+            return;
         }
 
         private static readonly HashSet<string> AudioExtensions =
@@ -336,124 +349,112 @@ namespace XnbExtractor
             }
         }
 
-        private static void ScanCsForAudio(string root)
+        private sealed record AudioReference(
+            string Line,
+            int LineNumber,
+            string Reference,
+            string File,
+            string Type,
+            bool IsAudio,
+            bool IsContent);
+
+        private static string EscapeMarkup(string text) => Markup.Escape(text);
+
+        private static List<AudioReference> ScanCsForAudio(string root)
         {
             string rootPath = Path.GetFullPath(root);
             string outputPath = Path.GetFullPath(OutputRoot);
+
+            var contentFiles = Directory
+                .EnumerateFiles(rootPath, "*", SearchOption.AllDirectories)
+                .Where(f => !Path.GetRelativePath(rootPath, f)
+                    .Split(
+                        Path.DirectorySeparatorChar,
+                        Path.AltDirectorySeparatorChar)
+                    .Any(part => excludedFolders.Contains(part)))
+                .ToLookup(
+                    f => Path.GetFileNameWithoutExtension(f),
+                    StringComparer.OrdinalIgnoreCase);
 
             var csFiles = Directory.EnumerateFiles(
                 rootPath,
                 "*.cs",
                 SearchOption.AllDirectories);
 
-            var audioFiles = new Dictionary<string, HashSet<string>>(
-                StringComparer.OrdinalIgnoreCase);
+            var results = new List<AudioReference>();
+
+            var pattern =
+                @"Load<\s*(AudioEngine|WaveBank|Song|SoundEffect|SoundBank)\s*>\s*\(\s*[""']([^""']+)[""']";
 
             foreach (string csFile in csFiles)
             {
-                string source = File.ReadAllText(csFile);
-                string csDirectory = Path.GetDirectoryName(csFile)!;
+                string[] lines = File.ReadAllLines(csFile);
 
-                foreach (Match match in Regex.Matches(
-                    source,
-                    @"(?:new\s+)?(AudioEngine|WaveBank|SoundBank)\s*\([^)]*?[""']([^""']+\.[a-z0-9]+)[""']",
-                    RegexOptions.IgnoreCase))
+                for (int lineNumber = 0; lineNumber < lines.Length; lineNumber++)
                 {
-                    string type = match.Groups[1].Value;
-                    string reference = match.Groups[2].Value;
+                    string line = lines[lineNumber].Trim();
 
-                    string extension = Path.GetExtension(reference)
-                        .ToLowerInvariant();
-
-                    if (!AudioExtensions.Contains(extension))
-                        continue;
-
-                    string? path = null;
-
-                    // Try relative to the .cs file.
-                    string candidate = Path.GetFullPath(
-                        Path.Combine(csDirectory, reference));
-
-                    if (File.Exists(candidate))
+                    foreach (Match match in Regex.Matches(
+                        line,
+                        pattern,
+                        RegexOptions.IgnoreCase))
                     {
-                        path = candidate;
-                    }
-                    else
-                    {
-                        // Try relative to the game root.
-                        candidate = Path.GetFullPath(
-                            Path.Combine(rootPath, reference));
+                        string type = match.Groups[1].Value;
+                        string reference = match.Groups[2].Value;
 
-                        if (File.Exists(candidate))
-                            path = candidate;
-                    }
-
-                    // Search the whole game tree if it wasn't found.
-                    if (path == null)
-                    {
-                        string relativeReference = reference
-                            .Replace('/', Path.DirectorySeparatorChar)
-                            .Replace('\\', Path.DirectorySeparatorChar);
-
-                        string fileName = Path.GetFileName(reference);
-
-                        foreach (string found in Directory.EnumerateFiles(
-                            rootPath,
-                            fileName,
-                            SearchOption.AllDirectories))
+                        foreach (string file in contentFiles[
+                            Path.GetFileName(reference)])
                         {
-                            string fullPath = Path.GetFullPath(found);
+                            string fullPath = Path.GetFullPath(file);
 
                             if (fullPath.StartsWith(
                                 outputPath + Path.DirectorySeparatorChar,
                                 StringComparison.OrdinalIgnoreCase))
-                            {
                                 continue;
-                            }
 
-                            if (fullPath.EndsWith(
-                                Path.DirectorySeparatorChar + relativeReference,
-                                StringComparison.OrdinalIgnoreCase))
-                            {
-                                path = fullPath;
-                                break;
-                            }
+                            string extension = Path
+                                .GetExtension(file)
+                                .ToLowerInvariant();
+
+                            bool isAudio = AudioExtensions.Contains(extension);
+                            bool isContent = extension == ".xnb";
+
+                            results.Add(new AudioReference(
+                                line,
+                                lineNumber + 1,
+                                reference,
+                                fullPath,
+                                type,
+                                isAudio,
+                                isContent));
+
                         }
                     }
-
-                    if (path == null)
-                        continue;
-
-                    if (!audioFiles.TryGetValue(path, out HashSet<string>? types))
-                    {
-                        types = [];
-                        audioFiles[path] = types;
-                    }
-
-                    types.Add(type);
                 }
             }
 
-            var files = audioFiles
-                .Where(x =>
-                {
-                    string fullPath = Path.GetFullPath(x.Key);
-
-                    return !fullPath.StartsWith(
-                        outputPath + Path.DirectorySeparatorChar,
-                        StringComparison.OrdinalIgnoreCase);
-                })
-                .OrderBy(x => x.Key)
+            results = results
+                .OrderBy(x => x.LineNumber)
+                .ThenBy(x => x.Reference)
+                .ThenBy(x => x.File)
                 .ToList();
 
             var table = new Table()
                 .Border(TableBorder.Rounded)
+                .AddColumn("Line")
+                .AddColumn("C# Reference")
                 .AddColumn("File")
                 .AddColumn("Type")
+                .AddColumn("Audio")
+                .AddColumn("Content")
                 .AddColumn("Status");
 
             table.AddRow(
-                $"Found {files.Count} audio files xact references",
+                $"Found {results.Count} audio XACT references",
+                "",
+                "",
+                "",
+                "",
                 "",
                 "");
 
@@ -461,18 +462,30 @@ namespace XnbExtractor
 
             AnsiConsole.Live(table).Start(ctx =>
             {
-                foreach (var entry in files)
+                foreach (AudioReference result in results)
                 {
-                    string file = entry.Key;
-                    string name = Path.GetFileName(file);
-                    string ext = Path.GetExtension(file).ToLowerInvariant();
-                    string type = string.Join(", ", entry.Value.OrderBy(x => x));
+                    string name = Path.GetFileName(result.File);
+                    string extension = Path
+                        .GetExtension(result.File)
+                        .ToLowerInvariant();
 
-                    if (!VgmstreamExtensions.Contains(ext))
+                    string audio = result.IsAudio
+                        ? "[green]Yes[/]"
+                        : "[grey]No[/]";
+
+                    string content = result.IsContent
+                        ? "[green]Yes[/]"
+                        : "[grey]No[/]";
+
+                    if (!VgmstreamExtensions.Contains(extension))
                     {
                         table.AddRow(
+                            result.LineNumber.ToString(),
+                            EscapeMarkup(result.Line),
                             name,
-                            type,
+                            result.Type,
+                            audio,
+                            content,
                             "[yellow]Skipped[/]");
 
                         ctx.Refresh();
@@ -480,15 +493,19 @@ namespace XnbExtractor
                     }
 
                     table.AddRow(
+                        result.LineNumber.ToString(),
+                        EscapeMarkup(result.Line),
                         name,
-                        type,
+                        result.Type,
+                        audio,
+                        content,
                         "[yellow]Processing...[/]");
 
                     int row = table.Rows.Count - 1;
 
                     ctx.Refresh();
 
-                    string log = RunVgmstream(file);
+                    string log = RunVgmstream(result.File);
 
                     bool failed = log.StartsWith(
                         "ERROR:",
@@ -496,7 +513,7 @@ namespace XnbExtractor
 
                     table.UpdateCell(
                         row,
-                        2,
+                        6,
                         failed
                             ? "[red]Failed[/]"
                             : "[green]Complete[/]");
@@ -517,8 +534,9 @@ namespace XnbExtractor
                 AnsiConsole.Write(panel);
                 AnsiConsole.WriteLine();
             }
-        }
 
+            return results;
+        }
         private static string RunVgmstream(string file)
         {
             string vgmstream = Path.Combine(
@@ -593,21 +611,39 @@ namespace XnbExtractor
             Console.WriteLine("      Extract XNB files and overwrite existing files.");
         }
 
-        private static bool ProcessFolder(string input, bool loader, bool parser, bool playaudio, ref int succeeded, ref int failed)
+        private static bool ProcessOneOrMoreFiles(string input, bool loader, bool parser, List<AudioReference> audioReferences, ref int succeeded, ref int failed, int? limit)
         {
             if (Directory.Exists(input))
             {
-                LoadGameDependencies(input);
-                var files = XnbCore.ListXnbFiles(input);
+                List<FileInfo> files = XnbCore.ListXnbFiles(input, limit: limit);
 
                 if (files.Count == 0)
                 {
-                    Console.WriteLine("FAILED| No XNB files found.");
+                    Console.WriteLine("No XNB files found.");
                     return false;
                 }
 
                 Console.WriteLine($"Found {files.Count} XNB files.");
+                List<DirectoryInfo> contentFolders = files
+                    .Select(f => f.Directory!)
+                    .DistinctBy(d => d.FullName)
+                    .OrderBy(d => d.FullName)
+                    .ToList();
 
+                var tree = new Tree($"[yellow]Content Folders ({contentFolders.Count})[/]");
+
+                foreach (DirectoryInfo folder in contentFolders)
+                {
+                    tree.AddNode($"[cyan]{Markup.Escape(folder.FullName)}[/]");
+                }
+
+                AnsiConsole.Write(tree);
+
+                if (!loader && !parser)
+                {
+                    Console.WriteLine("No loader or parser specified. Use --loader and/or --parser.");
+                    return false;
+                }
                 foreach (var file in files)
                 {
                     try
@@ -624,15 +660,8 @@ namespace XnbExtractor
                 Console.WriteLine($"Conversion complete. Failed: {failed} Succeeded: {succeeded}");
 
             }
-            else { Console.WriteLine($"FAILED| Path not found: {input}"); }
 
-            if (playaudio) { XnbCore.PlayExportedAudio(OutputRoot); }
-            Environment.Exit(failed == 0 ? 0 : 1);
-            return true;
-        }
 
-        private static bool ProcessOneOrMoreFiles(string input, bool loader, bool parser)
-        {
             if (System.IO.File.Exists(input))
             {
                 if (!input.EndsWith(".xnb", StringComparison.OrdinalIgnoreCase))
@@ -640,17 +669,29 @@ namespace XnbExtractor
                     Console.WriteLine("FAILED| Input file is not an XNB.");
                     return true;
                 }
-
+                XnbCore.runLoaderTest = loader;
                 XnbCore.ProcessFile(input, loader, parser);
                 return true;
             }
 
-            return false;
+            foreach (AudioReference audioReference in audioReferences)
+            {
+                if (System.IO.File.Exists(audioReference.File))
+                {
+                    XnbCore.ProcessFile(audioReference.File, loader, parser);
+                }
+                else
+                {
+                    Console.WriteLine($"FAILED| Audio reference file not found: {audioReference.File}");
+                }
+            }
+
+            return true;
         }
 
         private static void LoadGameDependencies(string input)
         {
-            var dll_files = XnbCore.ListDllFiles(Directory.GetParent(input)!.FullName);
+            var dll_files = XnbCore.ListDllFiles(input);
 
             if (dll_files.Count > 0)
             {
