@@ -222,13 +222,11 @@ namespace XnbExtractor
             {
                 ScanContentForAudio(InputRoot);
                 Console.WriteLine("Audio content scan complete.");
-                Console.ReadKey();
             }
             if (scanCs)
             {
                 audioReferences = ScanCsForAudio(InputRoot);
                 Console.WriteLine("Source code scan complete.");
-                Console.ReadKey();
             }
 
             ProcessOneOrMoreFiles(input, loader, parser, audioReferences, ref succeeded, ref failed, limit: limit);
