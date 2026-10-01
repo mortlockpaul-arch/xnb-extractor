@@ -54,13 +54,13 @@ namespace XnbExtractor
                 Console.Write(stdout);
 
                 if (!string.IsNullOrWhiteSpace(stderr))
-                    Console.WriteLine(stderr);
+                    AnsiConsole.MarkupLine(stderr);
 
                 if (process.ExitCode != 0)
-                    Console.WriteLine(
+                    AnsiConsole.MarkupLine(
                         $"vgmstream failed with exit code {process.ExitCode}");
                 else
-                    Console.WriteLine($"Converted: {outputFile}");
+                    AnsiConsole.MarkupLine($"Converted: {outputFile}");
             }
             public static void ProcessFile(string inputFile, bool runLoaderTest, bool runParserTest)
             {
@@ -127,7 +127,7 @@ namespace XnbExtractor
                     var relative = Utilities.GetRelativePath(root, file.FullName);
                     double sizeMb = file.Length / 1024d / 1024d;
 
-                    Console.WriteLine(
+                    AnsiConsole.MarkupLine(
                         $"{index++,4} | {file.Name,-40} {sizeMb,8:F2} MB | {relative}");
                 }
 
@@ -150,11 +150,11 @@ namespace XnbExtractor
                 //        return;
                 //    }
                 //}
-                //else { Console.WriteLine("Overwrite option is enabled."); }
+                //else { AnsiConsole.MarkupLine("Overwrite option is enabled."); }
 
                 if (limit.HasValue)
                 {
-                    Console.WriteLine($"Limiting to {limit.Value} files.");
+                    AnsiConsole.MarkupLine($"Limiting to {limit.Value} files.");
                     files = files.Take(limit.Value);
                 }
 
@@ -167,7 +167,7 @@ namespace XnbExtractor
                     var relative = Utilities.GetRelativePath(root, file.FullName);
                     double sizeMb = file.Length / 1024d / 1024d;
 
-                    Console.WriteLine(
+                    AnsiConsole.MarkupLine(
                         $"{index++,4} | {file.Name,-40} {sizeMb,8:F2} MB | {relative}");
                 }
 
@@ -194,7 +194,7 @@ namespace XnbExtractor
                 using var xnb = new XnbFile(inputFile);
 
                 var decompressed = xnb.Decompress();
-                Console.WriteLine(BitConverter.ToString(decompressed, 0, 16));
+                AnsiConsole.MarkupLine(BitConverter.ToString(decompressed, 0, 16));
                 var content = new XnbContent();
 
                 using var reader = new XnbContentReader(
@@ -217,7 +217,7 @@ namespace XnbExtractor
 
             public static void ExportAsset(LoadedAsset loaded, string inputFile, string outputFile, bool runLoaderTest)
             {
-                Console.WriteLine($"ACTUAL ASSET TYPE: {loaded.Asset?.GetType().AssemblyQualifiedName}");
+                AnsiConsole.MarkupLine($"ACTUAL ASSET TYPE: {loaded.Asset?.GetType().AssemblyQualifiedName}");
 
                 if (loaded.Asset == null)
                 {
@@ -292,20 +292,20 @@ namespace XnbExtractor
                         break;
 
                     case SpriteFontData font:
-                        Console.WriteLine($"SpriteFont glyphs: {font.Glyphs.Count}");
-                        Console.WriteLine($"SpriteFont cropping: {font.Cropping.Count}");
-                        Console.WriteLine($"SpriteFont characters: {font.Characters.Count}");
-                        Console.WriteLine($"SpriteFont kerning: {font.Kerning.Count}");
+                        AnsiConsole.MarkupLine($"SpriteFont glyphs: {font.Glyphs.Count}");
+                        AnsiConsole.MarkupLine($"SpriteFont cropping: {font.Cropping.Count}");
+                        AnsiConsole.MarkupLine($"SpriteFont characters: {font.Characters.Count}");
+                        AnsiConsole.MarkupLine($"SpriteFont kerning: {font.Kerning.Count}");
                         ExportSpriteFont(font, outputFile);
                         break;
 
                     case XnbSoundEffect soundEffect:
-                        Console.WriteLine("Exporting SoundEffect!");
-                        Console.WriteLine($"Format: {soundEffect.Format}");
-                        Console.WriteLine($"SampleRate: {soundEffect.SampleRate}");
-                        Console.WriteLine($"Channels: {soundEffect.Channels}");
-                        Console.WriteLine($"BitsPerSample: {soundEffect.BitsPerSample}");
-                        Console.WriteLine($"ExtraData Length: {soundEffect.ExtraData?.Length ?? 0}");
+                        AnsiConsole.MarkupLine("Exporting SoundEffect!");
+                        AnsiConsole.MarkupLine($"Format: {soundEffect.Format}");
+                        AnsiConsole.MarkupLine($"SampleRate: {soundEffect.SampleRate}");
+                        AnsiConsole.MarkupLine($"Channels: {soundEffect.Channels}");
+                        AnsiConsole.MarkupLine($"BitsPerSample: {soundEffect.BitsPerSample}");
+                        AnsiConsole.MarkupLine($"ExtraData Length: {soundEffect.ExtraData?.Length ?? 0}");
 
                         string wavFile = Path.ChangeExtension(outputFile, ".wav");
                         Directory.CreateDirectory(Path.GetDirectoryName(wavFile)!);
@@ -374,8 +374,8 @@ namespace XnbExtractor
             }
             private static void ExportSong(XnbSong song, string inputFile, string outputFile)
             {
-                Console.WriteLine($"Song: {song.FileName}");
-                Console.WriteLine($"Duration: {song.Duration} ms");
+                AnsiConsole.MarkupLine($"Song: {song.FileName}");
+                AnsiConsole.MarkupLine($"Duration: {song.Duration} ms");
 
                 // The SongReader stores the referenced audio filename,
                 // e.g. "c2.wma".
@@ -387,12 +387,12 @@ namespace XnbExtractor
 
                 if (sourceFile == null)
                 {
-                    Console.WriteLine(
+                    AnsiConsole.MarkupLine(
                         $"Could not find referenced audio: {song.FileName}");
                     return;
                 }
 
-                Console.WriteLine($"Referenced audio: {sourceFile}");
+                AnsiConsole.MarkupLine($"Referenced audio: {sourceFile}");
 
                 // Preserve the original directory structure relative to Content.
                 string relative = Utilities.GetRelativePath(
@@ -409,12 +409,12 @@ namespace XnbExtractor
 
                 ConvertAudio(sourceFile, wavOutput);
 
-                Console.WriteLine($"Exported song: {wavOutput}");
+                AnsiConsole.MarkupLine($"Exported song: {wavOutput}");
             }
 
             private static void ExportSoundEffect(XnbSoundEffect soundEffect, string outputFile)
             {
-                Console.WriteLine($"Exporting sound effect to file: {outputFile} ({soundEffect.Format})");
+                AnsiConsole.MarkupLine($"Exporting sound effect to file: {outputFile} ({soundEffect.Format})");
 
                 switch (soundEffect.Format)
                 {
@@ -456,7 +456,7 @@ namespace XnbExtractor
                     if (file.EndsWith("_decoded.wav", StringComparison.OrdinalIgnoreCase))
                         continue;
 
-                    Console.WriteLine($"Playing {Path.GetFileName(file)}");
+                    AnsiConsole.MarkupLine($"Playing {Path.GetFileName(file)}");
 
                     string decoded = Path.Combine(
                         Path.GetDirectoryName(file)!,
@@ -580,7 +580,7 @@ namespace XnbExtractor
                 writer.Write(sound.AudioData);
 
 
-                Console.WriteLine($"Wrote {outputFile}");
+                AnsiConsole.MarkupLine($"Wrote {outputFile}");
             }
 
             private static uint GetSampleCount(byte[] extra)
@@ -590,7 +590,7 @@ namespace XnbExtractor
 
             private static void ExportXmaWave(XnbSoundEffect sound, string outputFile)
             {
-                Console.WriteLine("Exporting wave header for xma sound effect...");
+                AnsiConsole.MarkupLine("Exporting wave header for xma sound effect...");
                 ExportWave(sound, outputFile);
             }
             private static void ExportEffect(XnbEffect effect, string outputFile)
@@ -607,8 +607,8 @@ namespace XnbExtractor
                     Directory.CreateDirectory(dir);
                 File.WriteAllBytes(fxbin, effect.Data);
 
-                Console.WriteLine($"Exported effect: {fxbin}");
-                Console.WriteLine($"Effect data: {effect.Data.Length} bytes");
+                AnsiConsole.MarkupLine($"Exported effect: {fxbin}");
+                AnsiConsole.MarkupLine($"Effect data: {effect.Data.Length} bytes");
 
                 XnbWriter.Write(
                     xnb,
@@ -616,7 +616,7 @@ namespace XnbExtractor
                     new LoadedAsset(effect),
                     false);
 
-                Console.WriteLine($"Exported Windows XNB: {xnb}");
+                AnsiConsole.MarkupLine($"Exported Windows XNB: {xnb}");
             }
             private static void ExportWave(XnbSoundEffect sound, string outputFile)
             {
@@ -656,22 +656,22 @@ namespace XnbExtractor
                 writer.Write(sound.AudioData.Length);
                 writer.Write(sound.AudioData);
 
-                Console.WriteLine($"fmt size: {fmtSize}");
-                Console.WriteLine($"data size: {sound.AudioData.Length}");
-                Console.WriteLine($"RIFF size: {riffSize}");
+                AnsiConsole.MarkupLine($"fmt size: {fmtSize}");
+                AnsiConsole.MarkupLine($"data size: {sound.AudioData.Length}");
+                AnsiConsole.MarkupLine($"RIFF size: {riffSize}");
             }
 
             static void ExportSpriteFont(SpriteFontData font, string outputFile)
             {
-                Console.WriteLine("=== SpriteFont Debug ===");
-                Console.WriteLine($"Characters: {font.Characters.Count}");
-                Console.WriteLine($"Glyphs: {font.Glyphs.Count}");
-                Console.WriteLine($"Cropping: {font.Cropping.Count}");
-                Console.WriteLine($"Kerning: {font.Kerning.Count}");
-                Console.WriteLine($"LineSpacing: {font.LineSpacing}");
-                Console.WriteLine($"Spacing: {font.Spacing}");
-                Console.WriteLine($"DefaultCharacter: {font.DefaultCharacter}");
-                Console.WriteLine($"SpriteFont texture type: {font.Texture?.GetType().AssemblyQualifiedName}");
+                AnsiConsole.MarkupLine("=== SpriteFont Debug ===");
+                AnsiConsole.MarkupLine($"Characters: {font.Characters.Count}");
+                AnsiConsole.MarkupLine($"Glyphs: {font.Glyphs.Count}");
+                AnsiConsole.MarkupLine($"Cropping: {font.Cropping.Count}");
+                AnsiConsole.MarkupLine($"Kerning: {font.Kerning.Count}");
+                AnsiConsole.MarkupLine($"LineSpacing: {font.LineSpacing}");
+                AnsiConsole.MarkupLine($"Spacing: {font.Spacing}");
+                AnsiConsole.MarkupLine($"DefaultCharacter: {font.DefaultCharacter}");
+                AnsiConsole.MarkupLine($"SpriteFont texture type: {font.Texture?.GetType().AssemblyQualifiedName}");
                 string directory = Path.GetDirectoryName(outputFile)!;
                 string name = Path.GetFileNameWithoutExtension(outputFile);
 
@@ -685,7 +685,7 @@ namespace XnbExtractor
 
                 if (font.Texture is XnbTexture texture)
                 {
-                    Console.WriteLine(
+                    AnsiConsole.MarkupLine(
                         $"Texture: {texture.Width}x{texture.Height}");
 
                     DdsWriter.Write(
@@ -694,7 +694,7 @@ namespace XnbExtractor
                 }
                 else
                 {
-                    Console.WriteLine(
+                    AnsiConsole.MarkupLine(
                         $"Unexpected SpriteFont texture type: " +
                         $"{font.Texture?.GetType().AssemblyQualifiedName}");
                 }
@@ -719,7 +719,7 @@ namespace XnbExtractor
                             WriteIndented = true
                         }));
 
-                Console.WriteLine($"Exported SpriteFont: {name}");
+                AnsiConsole.MarkupLine($"Exported SpriteFont: {name}");
             }
 
             private static void ExportStrings(string[] strings, string outputFile)
@@ -730,7 +730,7 @@ namespace XnbExtractor
                     Path.GetDirectoryName(textFile)!);
 
                 File.WriteAllLines(textFile, strings);
-                Console.WriteLine("Exported strings to text file {0}", textFile);
+                AnsiConsole.MarkupLine("Exported strings to text file {0}", textFile);
             }
 
             private static void ExportStrings(string text, string outputFile)
@@ -741,7 +741,7 @@ namespace XnbExtractor
                     Path.GetDirectoryName(textFile)!);
 
                 File.WriteAllText(textFile, text);
-                Console.WriteLine("Exported string to text file {0}", textFile);
+                AnsiConsole.MarkupLine("Exported string to text file {0}", textFile);
             }
 
             private static void ExportEventScriptSheet(object sheet, string outputFile)
@@ -780,7 +780,7 @@ namespace XnbExtractor
                 }
 
                 File.WriteAllText(textFile, sb.ToString());
-                Console.WriteLine($"Exported TEventScriptSheet: {textFile}");
+                AnsiConsole.MarkupLine($"Exported TEventScriptSheet: {textFile}");
             }
 
             private static void ExportBmp256(object bmp, string inputFile, string outputFile)
@@ -789,8 +789,8 @@ namespace XnbExtractor
                 int height = (int)GetMemberValue(bmp, "Height")!;
                 byte[] palIdx = (byte[])GetMemberValue(bmp, "PalIdx")!;
 
-                Console.WriteLine($"TBmp256: {width}x{height}");
-                Console.WriteLine($"PalIdx: {palIdx.Length} bytes");
+                AnsiConsole.MarkupLine($"TBmp256: {width}x{height}");
+                AnsiConsole.MarkupLine($"PalIdx: {palIdx.Length} bytes");
 
                 DirectoryInfo? dir = new FileInfo(inputFile).Directory;
 
@@ -817,7 +817,7 @@ namespace XnbExtractor
                     var loadedPalette = LoadAsset(palFile);
                     var paletteAsset = loadedPalette.Asset;
 
-                    Console.WriteLine(
+                    AnsiConsole.MarkupLine(
                         $"Palette {i}: {paletteAsset?.GetType().FullName}");
 
                     if (paletteAsset == null)
@@ -828,12 +828,12 @@ namespace XnbExtractor
                         paletteAsset,
                         "PalARGB")!;
 
-                    Console.WriteLine(
+                    AnsiConsole.MarkupLine(
                         $"Palette {i}: {palARGB.Length} colours");
 
                     palettes.Add(new XnbTEdgePal(palARGB));
                 }
-                Console.WriteLine($"Loaded {palettes.Count} palettes");
+                AnsiConsole.MarkupLine($"Loaded {palettes.Count} palettes");
                 if (palettes.Count == 0)
                     throw new InvalidDataException(
                         $"No palette XNBs found in {Path.Combine(contentRoot, "data")}");
@@ -843,8 +843,8 @@ namespace XnbExtractor
                 uint[] paletteData = manager.GetPalAll(
                     0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-                Console.WriteLine($"Extracted TBmp256 {width}x{height}");
-                Console.WriteLine($"Palette colours: {paletteData.Length}");
+                AnsiConsole.MarkupLine($"Extracted TBmp256 {width}x{height}");
+                AnsiConsole.MarkupLine($"Palette colours: {paletteData.Length}");
 
                 Directory.CreateDirectory(Path.GetDirectoryName(outputFile)!);
 
@@ -859,7 +859,7 @@ namespace XnbExtractor
                     paletteData,
                     Path.ChangeExtension(outputFile, ".png"));
 
-                Console.WriteLine($"Exported TBmp256 to PNG and palette index file. " + $"{Path.ChangeExtension(outputFile, ".png")}");
+                AnsiConsole.MarkupLine($"Exported TBmp256 to PNG and palette index file. " + $"{Path.ChangeExtension(outputFile, ".png")}");
             }
 
 
@@ -884,7 +884,7 @@ namespace XnbExtractor
 
                     sb.AppendLine();
                 }
-                Console.WriteLine("Exported CSV tables to text file {0}", Path.ChangeExtension(outputFile, ".txt"));
+                AnsiConsole.MarkupLine("Exported CSV tables to text file {0}", Path.ChangeExtension(outputFile, ".txt"));
                 File.WriteAllText(Path.ChangeExtension(outputFile, ".txt"), sb.ToString());
             }
 
@@ -909,21 +909,21 @@ namespace XnbExtractor
                     writer.WriteLine();
                 }
 
-                Console.WriteLine($"Exported CSV tables: {csvFile}");
+                AnsiConsole.MarkupLine($"Exported CSV tables: {csvFile}");
             }
 
             private static void ExportModel(XnbModel model)
             {
-                Console.WriteLine("Model loaded!");
-                Console.WriteLine($"Meshes: {model.Meshes.Count}");
+                AnsiConsole.MarkupLine("Model loaded!");
+                AnsiConsole.MarkupLine($"Meshes: {model.Meshes.Count}");
             }
 
             private static void ExportPalette(object palette, string outputFile)
             {
                 uint[] palARGB = (uint[])GetMemberValue(palette, "PalARGB")!;
 
-                Console.WriteLine("Palette Loaded");
-                Console.WriteLine($"Colours: {palARGB.Length}");
+                AnsiConsole.MarkupLine("Palette Loaded");
+                AnsiConsole.MarkupLine($"Colours: {palARGB.Length}");
 
                 using var image = new Bitmap(256, 256);
                 using var g = Graphics.FromImage(image);
@@ -952,16 +952,16 @@ namespace XnbExtractor
                     pngFile,
                     System.Drawing.Imaging.ImageFormat.Png);
 
-                Console.WriteLine($"Exported palette: {pngFile}");
+                AnsiConsole.MarkupLine($"Exported palette: {pngFile}");
             }
 
             private static void ExportTexture(XnbTexture texture, string outputFile)
             {
-                Console.WriteLine("Texture loaded!");
-                Console.WriteLine($"{texture.Width}x{texture.Height}");
-                Console.WriteLine($"MipCount: {texture.MipCount}");
-                Console.WriteLine($"Raw Format: {texture.RawFormat}");
-                Console.WriteLine($"Raw bytes: {texture.MipData[0].Length}");
+                AnsiConsole.MarkupLine("Texture loaded!");
+                AnsiConsole.MarkupLine($"{texture.Width}x{texture.Height}");
+                AnsiConsole.MarkupLine($"MipCount: {texture.MipCount}");
+                AnsiConsole.MarkupLine($"Raw Format: {texture.RawFormat}");
+                AnsiConsole.MarkupLine($"Raw bytes: {texture.MipData[0].Length}");
                 string pngFile = Path.ChangeExtension(outputFile, ".png");
                 switch (texture.Format)
                 {
@@ -1007,7 +1007,7 @@ namespace XnbExtractor
                     texture.Height,
                     rgba);
 
-                Console.WriteLine($"Exported PNG: {outputFile}");
+                AnsiConsole.MarkupLine($"Exported PNG: {outputFile}");
             }
 
             private static void ExportDds(XnbTexture texture, string ddsFile)
@@ -1026,7 +1026,7 @@ namespace XnbExtractor
                     outputFile + ".txt",
                     asset.ToString());
 
-                Console.WriteLine(
+                AnsiConsole.MarkupLine(
                     $"Exported unknown asset {asset.GetType()}");
             }
 
@@ -1037,21 +1037,21 @@ namespace XnbExtractor
                     LoadedAsset asset = LoadAsset(inputFile);
                     if (asset.Asset == null)
                     {
-                        Console.WriteLine($"Loaded asset is null for file: {inputFile}");
+                        AnsiConsole.MarkupLine($"Loaded asset is null for file: {inputFile}");
                         return;
                     }
                     string type = asset.Asset.GetType().FullName ?? asset.Asset.GetType().Name;
 
-                    Console.WriteLine($"Loaded asset type: {type}");
-                    Console.WriteLine($"Asset: {asset.Asset.GetType().Name}");
-                    Console.WriteLine($"Platform: {asset.Platform}");
+                    AnsiConsole.MarkupLine($"Loaded asset type: {type}");
+                    AnsiConsole.MarkupLine($"Asset: {asset.Asset.GetType().Name}");
+                    AnsiConsole.MarkupLine($"Platform: {asset.Platform}");
 
                     ExportAsset(asset, inputFile, outputFile, runLoaderTest);
 
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    AnsiConsole.MarkupLine(ex.Message);
                 }
             }
 
