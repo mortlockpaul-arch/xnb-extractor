@@ -1,6 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using Mono.Cecil;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using XnbExtractor.Content;
 using XnbExtractor.Content.Reflection;
@@ -61,27 +64,106 @@ namespace XnbExtractor.Readers
     public static class ReflectionReaderFactory
     {
         private static readonly Dictionary<string, Type> assembly_readers = new();
+        public sealed record XnbReaderInfo(
+            string ReaderName,
+            string AssemblyName,
+            string AssemblyPath,
+            string ModelType
+        );
 
-        public static void RegisterAssemblyReaders(Assembly asm)
+        private static readonly Dictionary<string, XnbReaderInfo>
+            discovered_readers = new(StringComparer.Ordinal);
+        public static void RegisterAssemblyReaders(string dllPath)
         {
-            foreach (Type type in asm.GetTypes())
+            using var asm = AssemblyDefinition.ReadAssembly(
+                dllPath,
+                new ReaderParameters
+                {
+                    ReadingMode = ReadingMode.Deferred,
+                    ReadSymbols = false
+                });
+
+            string assemblyName = asm.Name.Name;
+
+            foreach (var module in asm.Modules)
             {
-                Type? baseType = type.BaseType;
+                foreach (var type in GetAllTypes(module.Types))
+                {
+                    try
+                    {
+                        if (type.IsAbstract)
+                            continue;
 
-                if (baseType == null || !baseType.IsGenericType)
-                    continue;
+                        TypeReference? baseType = type.BaseType;
 
-                if (baseType.GetGenericTypeDefinition().Name != "ContentTypeReader`1")
-                    continue;
+                        while (baseType != null)
+                        {
+                            if (baseType is GenericInstanceType generic &&
+                                generic.ElementType.FullName ==
+                                "Microsoft.Xna.Framework.Content.ContentTypeReader`1")
+                            {
+                                string readerName =
+                                    type.FullName.Replace('/', '+');
 
-                string name = type.FullName + "," + type.Assembly.GetName().Name;
+                                string name =
+                                    $"{readerName},{assemblyName}";
 
-                assembly_readers[name] = type;
+                                string modelType =
+                                    generic.GenericArguments[0].FullName;
 
-                Console.WriteLine($"Registered {name}");
+                                discovered_readers[name] = new XnbReaderInfo(
+                                    readerName,
+                                    assemblyName,
+                                    dllPath,
+                                    modelType
+                                );
+
+                                Console.WriteLine(
+                                    $"Registered {name} -> {modelType}");
+
+                                break;
+                            }
+
+                            // Avoid resolving external assemblies.
+                            // Only follow base classes defined in this DLL.
+                            TypeDefinition? parent = null;
+
+                            if (baseType is TypeDefinition definition)
+                            {
+                                parent = definition;
+                            }
+                            else if (baseType.Scope is ModuleDefinition scope &&
+                                     scope == module)
+                            {
+                                parent = module.GetType(baseType.FullName);
+                            }
+
+                            if (parent == null)
+                                break;
+
+                            baseType = parent.BaseType;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(
+                            $"Skipping {type.FullName}: {ex.Message}");
+                    }
+                }
             }
         }
 
+        private static IEnumerable<TypeDefinition> GetAllTypes(
+            IEnumerable<TypeDefinition> types)
+        {
+            foreach (var type in types)
+            {
+                yield return type;
+
+                foreach (var nested in GetAllTypes(type.NestedTypes))
+                    yield return nested;
+            }
+        }
         public static object ReadByType(string typeName, XnbContentReader reader)
         {
             Console.WriteLine($"Assembly Factory lookup: {typeName}");

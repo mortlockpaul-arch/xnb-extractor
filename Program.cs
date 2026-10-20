@@ -33,6 +33,7 @@ namespace XnbExtractor
 
     internal static partial class Program
     {
+
         [DllImport("kernel32.dll", SetLastError = true)] static extern bool SetCurrentConsoleFontEx(IntPtr hConsoleOutput, bool bMaximumWindow, ref CONSOLE_FONT_INFOEX lpConsoleCurrentFontEx);
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -70,26 +71,85 @@ namespace XnbExtractor
         private static bool scanCs;
         private static bool scanContent;
         private static int? limit;
-        private static readonly HashSet<string> excludedFolders = new HashSet<string>(["bin", "obj", "Output"], StringComparer.OrdinalIgnoreCase);
-
-        static void Main(string[] args)
+        static string GetVersion()
+            {
+                return Assembly.GetExecutingAssembly()
+                    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                    ?.InformationalVersion
+                    ?? "0.0.0";
+            }
+    private static readonly HashSet<string> excludedFolders = new HashSet<string>(["bin", "obj", "Output"], StringComparer.OrdinalIgnoreCase);
+        static int Main(string[] args)
         {
-            string logDir = Path.Combine(AppContext.BaseDirectory, "logs");
-            Directory.CreateDirectory(logDir);
+            if (args.Any(arg =>
+                    arg.Equals("--version", StringComparison.OrdinalIgnoreCase) ||
+                    arg.Equals("-v", StringComparison.OrdinalIgnoreCase)))
+            {
+                Console.WriteLine(GetVersion());
+                return 0;
+            }
+            string logsDirectory = Path.Combine(
+                AppContext.BaseDirectory,
+                "logs"
+            );
 
-            string logPath = Path.Combine(logDir, "xnbextractor.log");
+            // Create the directory if it doesn't exist.
+            Directory.CreateDirectory(logsDirectory);
 
-            var logfile = new StreamWriter(logPath)
+            string logPath = Path.Combine(
+                logsDirectory,
+                "xnbextractor.log"
+            );
+
+            var logWriter = new StreamWriter(
+                logPath,
+                append: true,
+                encoding: new UTF8Encoding(false)
+            )
+            {
+                AutoFlush = true
+            };
+            Console.OutputEncoding = new UTF8Encoding(false);
+
+            var stdout = new StreamWriter(
+                Console.OpenStandardOutput(),
+                new UTF8Encoding(false))
             {
                 AutoFlush = true
             };
 
-            Console.SetOut(new TeeTextWriter(Console.Out, logfile));
-            Console.SetError(new TeeTextWriter(Console.Error, logfile));
+  
+            // Capture original console writers before redirecting.
+            TextWriter originalOut = Console.Out;
+            TextWriter originalError = Console.Error;
 
-            Console.SetWindowSize(160, 40);
-            //SetConsoleFont(8);
-            DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), SC_CLOSE, MF_BYCOMMAND);
+            // Prevent accidentally wrapping the redirected Console.Out.
+            Console.SetOut(new TeeTextWriter(originalOut, logWriter));
+            Console.SetError(new TeeTextWriter(originalError, logWriter));
+            Console.WriteLine("Console initialized successfully");
+
+            // Console resizing is not always supported.
+            try
+            {
+                if (!Console.IsOutputRedirected)
+                {
+                    int width = Math.Min(160, Console.LargestWindowWidth);
+                    int height = Math.Min(40, Console.LargestWindowHeight);
+
+                    Console.SetWindowSize(width, height);
+                }
+            }
+            catch (Exception ex) when (
+                ex is IOException ||
+                ex is ArgumentOutOfRangeException ||
+                ex is PlatformNotSupportedException)
+            {
+                Console.Error.WriteLine(
+                    $"Unable to resize console: {ex.Message}");
+            }
+
+        //SetConsoleFont(8);
+        DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), SC_CLOSE, MF_BYCOMMAND);
 
             string input = "";
             string output = "";
@@ -101,19 +161,19 @@ namespace XnbExtractor
             bool playaudio = false;
 #if DEBUG
             loader = true;
-            parser = true;
+            parser = false;
             limit = null;
             scanCs = true;
-            scanContent = true;
+            scanContent = false;
             playaudio = false;
             if (string.IsNullOrWhiteSpace(input))
             {
-                input = @"C:\source\Indie-Games\indie-game-archive\One Night Two Crazies (World) (XBLIG)\";
+                input = @"C:\source\Indie-Games\indie-game-archive\2 JAWSOME (World) (XBLIG)\";
             }
 
             if (string.IsNullOrWhiteSpace(output))
             {
-                output = @"C:\source\Indie-Games\indie-game-archive\One Night Two Crazies (World) (XBLIG)\Output";
+                output = @"C:\source\Indie-Games\indie-game-archive\2 JAWSOME (World) (XBLIG)\Output";
             }
 #endif
 
@@ -126,7 +186,7 @@ namespace XnbExtractor
                         {
                             Console.WriteLine("Error: --input requires a path.");
                             PrintHelp();
-                            return;
+                            return 1;
                         }
 
                         input = args[i];
@@ -137,7 +197,7 @@ namespace XnbExtractor
                         {
                             Console.WriteLine("Error: --output requires a path.");
                             PrintHelp();
-                            return;
+                            return 1;
                         }
 
                         output = args[i];
@@ -156,7 +216,7 @@ namespace XnbExtractor
                         {
                             Console.WriteLine("Error: --limit requires an integer value.");
                             PrintHelp();
-                            return;
+                            return 1;
                         }
                         limit = tempLimit;
                         break;
@@ -169,7 +229,7 @@ namespace XnbExtractor
                 Console.WriteLine();
                 Console.WriteLine("Press Enter to exit...");
                 Console.ReadLine();
-                return;
+                return 0;
             }
 
 
@@ -181,7 +241,7 @@ namespace XnbExtractor
                 Console.WriteLine();
                 Console.WriteLine("Press Enter to exit...");
                 Console.ReadLine();
-                return;
+                return 1;
             }
 
             if (!Directory.Exists(output)) Directory.CreateDirectory(output);
@@ -235,7 +295,7 @@ namespace XnbExtractor
 
             Console.WriteLine("xnb-extractor complete. Press any key to exit.");
             Console.ReadKey();
-            return;
+            return 0;
         }
 
         private static readonly HashSet<string> AudioExtensions =
@@ -687,102 +747,270 @@ namespace XnbExtractor
             return true;
         }
 
-        private static void LoadGameDependencies(string input)
+        private static readonly HashSet<string> loadedDlls =
+            new(StringComparer.OrdinalIgnoreCase);
+
+        private static bool resolverInstalled = false;
+
+        private static Assembly? ResolveXnaAssembly( object? sender, ResolveEventArgs args)
         {
-            var dll_files = XnbCore.ListDllFiles(input);
+            AssemblyName requested = new AssemblyName(args.Name);
 
-            if (dll_files.Count > 0)
+            string? name = requested.Name;
+
+            if (name == null ||
+                !name.StartsWith(
+                    "Microsoft.Xna.Framework",
+                    StringComparison.OrdinalIgnoreCase))
             {
-                Console.WriteLine($"Found {dll_files.Count} DLL files.");
-                foreach (var dll in dll_files)
-                {
-                    Console.WriteLine($"Loading DLL: {dll.FullName}");
-                    try
-                    {
-                        AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
-                        {
-                            if (args.Name.StartsWith("Microsoft.Xna.Framework"))
-                            {
-                                return Assembly.LoadFrom(
-                                    @"C:\PycharmProjects\xenia-game-manager\src\References\v3.1\References\Xbox360\Microsoft.Xna.Framework.dll");
-                            }
-
-                            return null;
-                        };
-                        XnaAssemblyResolver.Install();
-                        Assembly asm = Assembly.LoadFrom(dll.FullName);
-                        ReflectionReaderFactory.RegisterAssemblyReaders(asm);
-                        foreach (Type t in asm.GetTypes())
-                        {
-                            Console.WriteLine(t.FullName);
-
-                            Type? baseType = t.BaseType;
-
-                            if (baseType == null)
-                                continue;
-
-                            if (!baseType.IsGenericType)
-                                continue;
-
-                            if (baseType.GetGenericTypeDefinition().Name != "ContentTypeReader`1")
-                                continue;
-
-                            Console.WriteLine($"Reader : {t.FullName}");
-
-                            Type model = baseType.GetGenericArguments()[0];
-
-                            Console.WriteLine($"    Reads : {model.FullName}");
-                        }
-                        Console.WriteLine($"Loaded DLL: {dll.FullName}");
-                    }
-                    catch (ReflectionTypeLoadException ex)
-                    {
-                        Console.WriteLine($"ReflectionTypeLoadException loading {dll.Name}");
-
-                        foreach (var loaderEx in ex.LoaderExceptions)
-                        {
-                            Console.WriteLine("--------------------------------");
-                            Console.WriteLine(loaderEx.GetType().FullName);
-                            Console.WriteLine(loaderEx.Message);
-
-                            if (loaderEx is FileNotFoundException fnf)
-                                Console.WriteLine($"Missing: {fnf.FileName}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.ToString());
-                    }
-                }
+                return null;
             }
-            else
+
+            int major = requested.Version?.Major ?? 4;
+
+            string version = major switch
             {
-                Console.WriteLine("No DLL files found.");
+                2 => "v2.0",
+                3 => "v3.1",
+                4 => "v4.0",
+                _ => "v4.0"
+            };
+
+            string referencesRoot = Path.Combine(
+                AppContext.BaseDirectory,
+                "xna-references"
+            );
+            string dllPath = Path.Combine(
+                referencesRoot,
+                version,
+                "References",
+                "Xbox360",
+                name + ".dll"
+            );
+
+            Console.WriteLine(
+                $"XNA Resolve: {requested.FullName}");
+
+            Console.WriteLine(
+                $"XNA Reference: {dllPath}");
+
+            if (!File.Exists(dllPath))
+            {
+                Console.WriteLine(
+                    $"XNA reference not found: {dllPath}");
+
+                return null;
+            }
+
+            try
+            {
+                Assembly assembly = Assembly.LoadFrom(dllPath);
+
+                // Verify that the resolved assembly has the requested identity.
+                AssemblyName loaded = assembly.GetName();
+
+                if (!AssemblyName.ReferenceMatchesDefinition(
+                        requested, loaded))
+                {
+                    Console.WriteLine(
+                        $"XNA assembly identity mismatch: {loaded.FullName}");
+
+                    return null;
+                }
+
+                return assembly;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(
+                    $"Failed to resolve {name}: {ex.Message}");
+
+                return null;
             }
         }
 
-        //public static void RegisterAssemblyReaders(Assembly asm)
-        //{
-        //    foreach (Type type in asm.GetTypes())
-        //    {
-        //        Type? baseType = type.BaseType;
+        public static void Info(string message)
+        {
+            Log(message, "green");
+        }
 
-        //        if (baseType == null)
-        //            continue;
+        public static void Warning(string message)
+        {
+            Log(message, "yellow");
+        }
 
-        //        if (!baseType.IsGenericType)
-        //            continue;
+        public static void Error(string message)
+        {
+            Log(message, "red");
+        }
 
-        //        if (baseType.GetGenericTypeDefinition().Name != "ContentTypeReader`1")
-        //            continue;
+        public static void Success(string message)
+        {
+            Log(message, "green");
+        }
+        public static void Log(string message, string color = "white")
+        {
+            string escapedMessage = Markup.Escape(message);
 
-        //        string name = type.FullName + "," + type.Assembly.GetName().Name;
+            AnsiConsole.MarkupLine(
+                $"[{color}]{escapedMessage}[/]");
+        }
 
-        //        readers[name] = type;
+        public static string GetReferenceDirectory(string xnaVersion)
+        {
+            string root = Path.Combine(
+                    AppContext.BaseDirectory,
+                    "xna-references"
+                );
 
-        //        Console.WriteLine($"Registered {name}");
-        //    }
-        //}
+            string folder = xnaVersion switch
+            {
+                "2.0" => "v2.0",
+                "3.0" => "v3.0",
+                "3.1" => "v3.1",
+                "3.0 or 3.1" => "v3.1",
+                "4.0" => "v4.0",
+                _ => throw new NotSupportedException(
+                    $"Unsupported XNA version: {xnaVersion}")
+            };
+
+
+            return Path.Combine(root, folder, "References", "Xbox360");
+        }
+
+        private static void LoadGameDependencies(string input)
+        {
+            string xnaVersion =
+                XnaVersionDetector.DetectGameVersion(input);
+
+            Console.WriteLine($"Detected XNA version: {xnaVersion}");
+
+            foreach (var detection in XnaVersionDetector.Detect(input))
+            {
+                Console.WriteLine(
+                    $"{detection.FileName}: " +
+                    $"{detection.AssemblyName} " +
+                    $"{detection.AssemblyVersion} " +
+                    $"(XNA {detection.XnaVersion})"
+                );
+            }
+
+            if (!resolverInstalled)
+            {
+                AppDomain.CurrentDomain.AssemblyResolve += ResolveXnaAssembly;
+
+                XnaAssemblyResolver.Install();
+
+                resolverInstalled = true;
+            }
+
+            var dllFiles = XnbCore.ListDllFiles(input);
+            Console.WriteLine($"DLL count: {dllFiles.Count}");
+            foreach (var dll in dllFiles)
+            {
+                Console.WriteLine(
+                    $"{dll.Length / 1024.0 / 1024.0:N2} MB - {dll.FullName}");
+            }
+
+            foreach (var dll in dllFiles)
+            {
+                string path = Path.GetFullPath(dll.FullName);
+
+                if (loadedDlls.Contains(path))
+                    continue;
+
+                if (dll.DirectoryName?.Split(
+                        Path.DirectorySeparatorChar,
+                        Path.AltDirectorySeparatorChar)
+                    .Any(p => excludedFolders.Contains(p)) == true)
+                {
+                    continue;
+                }
+
+                Console.WriteLine($"Loading DLL: {path}");
+
+                try
+                {
+                    LogMemory($"Before {dll.Name}");
+
+                    Assembly asm = Assembly.LoadFrom(path);
+
+                    ReflectionReaderFactory.RegisterAssemblyReaders(dll.FullName);
+
+                    Type[] types;
+
+                    try
+                    {
+                        types = asm.GetTypes();
+                    }
+                    catch (ReflectionTypeLoadException ex)
+                    {
+                        foreach (var loaderEx in ex.LoaderExceptions)
+                        {
+                            if (loaderEx != null)
+                                Console.WriteLine(
+                                    $"Loader error: {loaderEx.Message}");
+                        }
+
+                        types = ex.Types
+                            .Where(t => t != null)
+                            .Cast<Type>()
+                            .ToArray();
+                    }
+
+                    foreach (Type type in types)
+                    {
+                        Type? baseType = type.BaseType;
+
+                        if (baseType == null || !baseType.IsGenericType)
+                            continue;
+
+                        if (baseType.GetGenericTypeDefinition()
+                            .FullName !=
+                            "Microsoft.Xna.Framework.Content.ContentTypeReader`1")
+                        {
+                            continue;
+                        }
+
+                        Type model = baseType.GetGenericArguments()[0];
+
+                        Console.WriteLine(
+                            $"Reader: {type.FullName} -> {model.FullName}");
+                    }
+
+                    loadedDlls.Add(path);
+
+                    LogMemory($"After {dll.Name}");
+                }
+                catch (OutOfMemoryException)
+                {
+                    Console.Error.WriteLine(
+                        $"OUT OF MEMORY while loading {path}");
+
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine(
+                        $"Failed to load {path}: {ex}");
+                }
+            }
+        }
+
+        private static void LogMemory(string stage)
+        {
+            using var process = Process.GetCurrentProcess();
+
+            double managedMB = GC.GetTotalMemory(false) / 1024.0 / 1024.0;
+            double workingMB = process.WorkingSet64 / 1024.0 / 1024.0;
+            double privateMB = process.PrivateMemorySize64 / 1024.0 / 1024.0;
+
+            Console.WriteLine(
+                $"[MEMORY] {stage} | " +
+                $"Managed: {managedMB:N2} MB | " +
+                $"Working Set: {workingMB:N2} MB | " +
+                $"Private: {privateMB:N2} MB");
+        }
 
         private static void RegisterReaders()
         {
@@ -865,32 +1093,41 @@ namespace XnbExtractor
 
         public sealed class TeeTextWriter : TextWriter
         {
-            private readonly TextWriter[] writers;
+            private readonly TextWriter _first;
+            private readonly TextWriter _second;
 
-            public TeeTextWriter(params TextWriter[] writers)
+            public TeeTextWriter(TextWriter first, TextWriter second)
             {
-                this.writers = writers;
+                _first = first;
+                _second = second;
             }
 
-            public override Encoding Encoding => Encoding.UTF8;
-
-            public override void WriteLine(string? value)
-            {
-                foreach (var writer in writers)
-                    writer.WriteLine(value);
-            }
+            public override Encoding Encoding => _first.Encoding;
 
             public override void Write(char value)
             {
-                foreach (var writer in writers)
-                    writer.Write(value);
+                _first.Write(value);
+                _second.Write(value);
+            }
+
+            public override void Write(string? value)
+            {
+                _first.Write(value);
+                _second.Write(value);
+            }
+
+            public override void WriteLine(string? value)
+            {
+                _first.WriteLine(value);
+                _second.WriteLine(value);
             }
 
             public override void Flush()
             {
-                foreach (var writer in writers)
-                    writer.Flush();
+                _first.Flush();
+                _second.Flush();
             }
         }
+
     }
 }

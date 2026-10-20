@@ -127,9 +127,7 @@ namespace XnbExtractor
                     var relative = Utilities.GetRelativePath(root, file.FullName);
                     double sizeMb = file.Length / 1024d / 1024d;
 
-                    Info(
-                        $"{index++,4} | {file.Name,-40} {sizeMb,8:F2} MB | {relative}");
-                }
+                    Info( $"{index++,4} | {file.Name,-40} {sizeMb,8:F2} MB | {relative}"); }
 
                 return list;
             }
@@ -1052,11 +1050,13 @@ namespace XnbExtractor
             private static void Warning(string message) => Log(message, "yellow");
             private static void Error(string message) => Log(message, "red");
 
-            private static void Log(string message, string color = "white")
+            public static void Log(string message, string color = "white")
             {
-                Info($"[{color}]{Markup.Escape(message)}[/]");
-            }
+                string escapedMessage = Markup.Escape(message);
 
+                AnsiConsole.MarkupLine(
+                    $"[{color}]{escapedMessage}[/]");
+            }
 
             private static object? GetMemberValue(object obj, string name)
             {

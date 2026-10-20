@@ -9,7 +9,12 @@
 		<OutputType>Exe</OutputType>
 		<StartupObject>XnbExtractor.Program</StartupObject>
 	</PropertyGroup>
-
+	<PropertyGroup>
+		<Version>1.0.0</Version>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<InformationalVersion>1.0.0</InformationalVersion>
+	</PropertyGroup>
 	<ItemGroup>
 	  <Compile Remove="Content\ContentReaders\Fna\**" />
 	  <Compile Remove="Users\**" />
@@ -24,9 +29,14 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
-
+	<ItemGroup>
+		<Content Include="xna-references\**\*">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Mono.Cecil" Version="0.11.6" />
 		<PackageReference Include="NAudio" Version="3.1.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="Spectre.Console" Version="0.57.2" />
@@ -41,7 +51,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Indie-Games\library-projects\fna.contents.libraries\FNA.Contents.csproj" />
+	  <ProjectReference Include="..\Indie-Games\FNA.Contents\FNA.Contents.csproj" />
 	</ItemGroup>
 
 </Project>
