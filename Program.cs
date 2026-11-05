@@ -880,12 +880,27 @@ namespace XnbExtractor
 
         private static void LoadGameDependencies(string input)
         {
+            string scanRoot = Path.GetFullPath(input);
+
+            if (File.Exists(scanRoot))
+            {
+                scanRoot = Path.GetDirectoryName(scanRoot)
+                    ?? throw new DirectoryNotFoundException(
+                        $"Cannot determine parent directory: {input}");
+            }
+
+            if (!Directory.Exists(scanRoot))
+            {
+                throw new DirectoryNotFoundException(
+                    $"Dependency scan directory does not exist: {scanRoot}");
+            }
+
             string xnaVersion =
-                XnaVersionDetector.DetectGameVersion(input);
+                XnaVersionDetector.DetectGameVersion(scanRoot);
 
             Console.WriteLine($"Detected XNA version: {xnaVersion}");
 
-            foreach (var detection in XnaVersionDetector.Detect(input))
+            foreach (var detection in XnaVersionDetector.Detect(scanRoot))
             {
                 Console.WriteLine(
                     $"{detection.FileName}: " +
@@ -904,7 +919,7 @@ namespace XnbExtractor
                 resolverInstalled = true;
             }
 
-            var dllFiles = XnbCore.ListDllFiles(input);
+            var dllFiles = XnbCore.ListDllFiles(scanRoot);
             Console.WriteLine($"DLL count: {dllFiles.Count}");
             foreach (var dll in dllFiles)
             {
